@@ -1,78 +1,40 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ScheduleByCity, CityName } from './types/schedule';
-import CityTabs from './components/CityTabs';
-import ScheduleList from './components/ScheduleList';
-import StatsCard from './components/StatsCard';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '../lib/supabase';
 
-export default function Home() {
-  const [scheduleData, setScheduleData] = useState<ScheduleByCity | null>(null);
-  const [selectedCity, setSelectedCity] = useState<CityName>('부다페스트');
-  const [loading, setLoading] = useState(true);
+export default function HomePage() {
+  const router = useRouter();
 
   useEffect(() => {
-    fetch('/schedule.json')
-      .then(res => res.json())
-      .then(data => {
-        setScheduleData(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to load schedule:', err);
-        setLoading(false);
-      });
+    checkAuth();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-2xl font-semibold text-indigo-600">일정을 불러오는 중...</div>
-      </div>
-    );
-  }
+  async function checkAuth() {
+    try {
+      // Check if user is logged in
+      const { data: { user } } = await supabase.auth.getUser();
 
-  if (!scheduleData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-xl text-red-600">일정을 불러올 수 없습니다.</div>
-      </div>
-    );
+      if (!user) {
+        // Not logged in, go to login
+        router.push('/login');
+      } else {
+        // Logged in, go to projects page
+        router.push('/projects');
+      }
+    } catch (err) {
+      console.error('Failed to check auth:', err);
+      router.push('/login');
+    }
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2 flex items-center gap-3">
-            ✈️ 프오헝 여행 대시보드
-          </h1>
-          <p className="text-gray-600 text-lg">2026년 4월 26일 - 5월 6일</p>
-        </div>
-
-        {/* Stats Overview */}
-        <StatsCard scheduleData={scheduleData} />
-
-        {/* City Tabs */}
-        <CityTabs
-          selectedCity={selectedCity}
-          onCityChange={setSelectedCity}
-          scheduleData={scheduleData}
-        />
-
-        {/* Schedule List */}
-        <ScheduleList
-          schedules={scheduleData[selectedCity]}
-          city={selectedCity}
-          onUpdate={(updatedSchedules) => {
-            setScheduleData({
-              ...scheduleData,
-              [selectedCity]: updatedSchedules
-            });
-          }}
-        />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mb-4"></div>
+        <p className="text-xl font-semibold text-gray-700">로그인 확인 중...</p>
       </div>
-    </main>
+    </div>
   );
 }

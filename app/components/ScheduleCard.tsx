@@ -9,6 +9,7 @@ interface ScheduleCardProps {
   isExpanded: boolean;
   onToggleExpand: () => void;
   onUpdate: (schedule: ScheduleItem) => void;
+  onDelete: () => void;
 }
 
 export default function ScheduleCard({
@@ -17,6 +18,7 @@ export default function ScheduleCard({
   isExpanded,
   onToggleExpand,
   onUpdate,
+  onDelete,
 }: ScheduleCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedNotes, setEditedNotes] = useState(schedule.notes || '');
@@ -27,7 +29,7 @@ export default function ScheduleCard({
       reservation: {
         ...schedule.reservation,
         completed: !schedule.reservation.completed,
-        status: !schedule.reservation.completed ? '완료' : '시작 전',
+        status: !schedule.reservation.completed ? '완료' : '예정',
       },
     });
   };
@@ -221,6 +223,19 @@ export default function ScheduleCard({
                 {schedule.notes || '메모가 없습니다. 편집 버튼을 눌러 추가하세요.'}
               </p>
             )}
+          </div>
+
+          {/* Delete Button */}
+          <div className="border-t pt-4 flex justify-end">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors font-semibold"
+            >
+              🗑️ 일정 삭제
+            </button>
           </div>
         </div>
       )}

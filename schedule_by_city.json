@@ -1,0 +1,1292 @@
+{
+  "부다페스트": [
+    {
+      "date": "4/26",
+      "day_of_week": "일☀️",
+      "title": "부다페스트 페렌츠 리스트 국제공항 도착",
+      "details": "인천 12:35분 → 18:05분 도착",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "버스(100E), 트램, 택시(우버) / 호스트 예약",
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/26",
+      "day_of_week": "일☀️",
+      "title": "숙소이동",
+      "details": "aibnb 요청 시 42e 택시 대기",
+      "coordinates": {
+        "latitude": 47.5033703,
+        "longitude": 19.0386225
+      },
+      "google_maps_url": "https://www.google.co.kr/maps/place/Budapest,+Szil%C3%A1gyi+Dezs%C5%91+t%C3%A9r+4,+1011+%ED%97%9D%EA%B0%80%EB%A6%AC/@47.5033703,19.0386225,15.77z/data=!4m6!3m5!1s0x4741dc18340cf74b:0xc620b7476b31ce37!8m2!3d47.5036385!4d19.0382906!16s%2Fg%2F11c5f7zz51?hl=ko&entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D",
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "1시간 / 40분",
+      "meals": "저녁(한식), 야식(인근 맥주집?)",
+      "cost": "42e (72,672won)",
+      "unit": null
+    },
+    {
+      "date": "4/26",
+      "day_of_week": "일☀️",
+      "title": "부다페스트의 아파트 (airbnb)",
+      "details": "airbnb 체크인",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": "4.26~4.28",
+      "checkin_checkout": "16시 / 10시",
+      "transportation": "Budapest, Szilágyi Dezső tér 4 (부다페스트, 1011, 헝가리)",
+      "meals": null,
+      "cost": "309,515",
+      "unit": "2박"
+    },
+    {
+      "date": "4/26",
+      "day_of_week": "일☀️",
+      "title": "어부의요새",
+      "details": "야경",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/26",
+      "day_of_week": "일☀️",
+      "title": "마트",
+      "details": "물, 과자, 과일, 빵",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "세체니온천",
+      "details": "조조할인 (9시) 현장 발권 (조조 예약 안됨)",
+      "coordinates": {
+        "latitude": 47.5098761,
+        "longitude": 19.0494307
+      },
+      "google_maps_url": "https://www.google.co.kr/maps/place/%EC%84%B8%EC%B2%B4%EB%8B%88+%EC%98%A8%EC%B2%9C/@47.5098761,19.0494307,14.21z/data=!4m15!1m8!3m7!1s0x4741dc18340cf74b:0xc620b7476b31ce37!2zQnVkYXBlc3QsIFN6aWzDoWd5aSBEZXpzxZEgdMOpciA0LCAxMDExIO2XneqwgOumrA!3b1!8m2!3d47.5036385!4d19.0382906!16s%2Fg%2F11c5f7zz51!3m5!1s0x4741db8605675577:0xcbc0c308b68d2412!8m2!3d47.5186568!4d19.0823791!16zL20vMDdyczF5?hl=ko&entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D",
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": "현장발권",
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "우버택시(23분), 지하철(30분)",
+      "meals": "아침(한식), 점심(식당), 저녁(식당)",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "성이슈트반 대성당",
+      "details": "인근 (젤라또 로사)",
+      "coordinates": {
+        "latitude": 47.4979077,
+        "longitude": 19.0458385
+      },
+      "google_maps_url": "https://www.google.co.kr/maps/place/%EC%84%B1+%EC%9D%B4%EC%8A%88%ED%8A%B8%EB%B0%98+%EB%8C%80%EC%84%B1%EB%8B%B9/@47.4979077,19.0458385,15.41z/data=!4m15!1m8!3m7!1s0x4741dc18340cf74b:0xc620b7476b31ce37!2zQnVkYXBlc3QsIFN6aWzDoWd5aSBEZXpzxZEgdMOpciA0LCAxMDExIO2XneqwgOumrA!3b1!8m2!3d47.5036385!4d19.0382906!16s%2Fg%2F11c5f7zz51!3m5!1s0x4741c15e3aa3cdf7:0xdd42fcacae7fbccb!8m2!3d47.5008902!4d19.0539887!16zL20vMDQwM3N0?hl=ko&entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D",
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "국회의사당",
+      "details": "",
+      "coordinates": {
+        "latitude": 47.5068377,
+        "longitude": 19.0482459
+      },
+      "google_maps_url": "https://www.google.co.kr/maps/place/%EA%B5%AD%ED%9A%8C%EC%9D%98%EC%82%AC%EB%8B%B9/@47.5068377,19.0482459,15.42z/data=!4m15!1m8!3m7!1s0x4741dc18340cf74b:0xc620b7476b31ce37!2zQnVkYXBlc3QsIFN6aWzDoWd5aSBEZXpzxZEgdMOpciA0LCAxMDExIO2XneqwgOumrA!3b1!8m2!3d47.5036385!4d19.0382906!16s%2Fg%2F11c5f7zz51!3m5!1s0x4741dc1046d4a33d:0x342122b8ff8f0f6e!8m2!3d47.507121!4d19.045669!16zL20vMDhsdnN0?hl=ko&entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D",
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "점심식사",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "세체니다리, 부다성 (푸니쿨라)",
+      "details": "",
+      "coordinates": {
+        "latitude": 47.4985965,
+        "longitude": 19.0426135
+      },
+      "google_maps_url": "https://www.google.co.kr/maps/place/세체니+다리/@47.4985965,19.0426135,15.95z/data=!4m15!1m8!3m7!1s0x4741dc18340cf74b:0xc620b7476b31ce37!2zQnVkYXBlc3QsIFN6aWzDoWd5aSBEZXpzxZEgdMOpciA0LCAxMDExIO2XneqwgOumrA!3b1!8m2!3d47.5036385!4d19.0382906!16s%2Fg%2F11c5f7zz51!3m5!1s0x4741dc3fb79a1a29:0x1e40fed785d0c9a4!8m2!3d47.4989928!4d19.0436994!16zL20vMDN5aHc2?hl=ko&entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D",
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "마차슈 성당",
+      "details": "일몰, 야경",
+      "coordinates": {
+        "latitude": 47.5019537,
+        "longitude": 19.0315868
+      },
+      "google_maps_url": "https://www.google.co.kr/maps/place/%EB%A7%88%EC%B0%A8%EC%8A%88+%EC%84%B1%EB%8B%B9/@47.5019537,19.0315868,17z/data=!4m14!1m7!3m6!1s0x4741dc227e9e2bd7:0x62d0728c6f694ad5!2z66eI7LCo7IqIIOyEseuLuQ!8m2!3d47.5019537!4d19.0341617!16zL20vMGJwdHoz!3m5!1s0x4741dc227e9e2bd7:0x62d0728c6f694ad5!8m2!3d47.5019537!4d19.0341617!16zL20vMGJwdHoz?hl=ko&entry=ttu&g_ep=EgoyMDI2MDQyMC4wIKXMDSoASAFQAw%3D%3D",
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "야경투어(크루즈?)",
+      "details": "크루즈 투어 예약(?)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/27",
+      "day_of_week": "월Ⓜ️",
+      "title": "마트",
+      "details": "물, 과자, 과일, 빵",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    }
+  ],
+  "빈": [
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "부다 숙소 출발",
+      "details": "09시 출발",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "20분",
+      "checkin_checkout": null,
+      "transportation": "우버 택시",
+      "meals": "아침(한식), 점심(샌드위치 등), 저녁(한식)",
+      "cost": null,
+      "unit": "원"
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "Budapest-Kelenfold 역 이동",
+      "details": "부다-캘렌폴드역",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "2시간 47분",
+      "checkin_checkout": null,
+      "transportation": "기차(RJET) 11:45 → 14:32",
+      "meals": null,
+      "cost": "91,696",
+      "unit": "1인"
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "빈 중앙역 (Vienna, Hbf) 도착",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "빈 숙소 이동",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "우버 택시 (6분)",
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "Hauptbahnhof 근처 뷰티스튜디오 (airbnb)",
+      "details": "airbnb 체크인",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "4.28~5.1",
+      "checkin_checkout": "15시 / 10시",
+      "transportation": "Anzengrubergasse 28, 빈, Vienna 1050, 오스트리아",
+      "meals": null,
+      "cost": "658,118",
+      "unit": "3박"
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "주변 둘러보기",
+      "details": "숙소인근 마켓찾기",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "마트",
+      "details": "물, 과자, 과일, 빵",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/28",
+      "day_of_week": "화🔥",
+      "title": "카를성당 (비발디사계 공연)",
+      "details": "20시 15분 시작",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "택시(10분), 지하철(14분), 걸어서 25분",
+      "meals": null,
+      "cost": "295,081",
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "이정은의 로맨틱 비엔나투어 (마이리얼트립)",
+      "details": "10시 투어 시작. Opernpassage Top9 지하철역 Karlsplatz 지하상가 안에 있는 BackWerk라는 빵집 앞 (09시30분까지 도착)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": "4시간 소요",
+      "checkin_checkout": null,
+      "transportation": "대중교통(트램 1번) 15분 소요",
+      "meals": "아침(한식), 점심(핫도그), 저녁(립스오브비엔나 17시 예약)",
+      "cost": "56천원 × 3 = 168,000",
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "국립오페라하우스",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "10분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "카페 자허 앞",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "10분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "알베르티나미술관",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "20분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "호프부르크 왕궁",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "30분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "황실 보물 박물관",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "10분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": "입장권 별도 (21유로 × 3명 = 63유로), 소시지(점심충분) 10유로 × 3명 = 30유로",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "스페인 승마학교",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "10분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "미하엘 광장",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "10분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "플마르크 명품거리",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "10분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "소세지간식타임",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "40분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "성슈테판 대성당",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "20분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "벨베데레 미술관",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": "90분",
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/29",
+      "day_of_week": "수💦",
+      "title": "저녁 \"립스오브 비엔나\"",
+      "details": "17시 예약",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/30",
+      "day_of_week": "목🌲",
+      "title": "빈 미술사 박물관 (예약)",
+      "details": "오전 10시 예약",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "우버택시(15분), 대중교통(40분)",
+      "meals": "아침(한식), 점심(피그뮐러 1호점 12시 예약), 저녁(숙소)",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/30",
+      "day_of_week": "목🌲",
+      "title": "점심 \"피그뮐러 1호점\"",
+      "details": "12시 예약 (결제X)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "4/30",
+      "day_of_week": "목🌲",
+      "title": "쇤부른 궁전 (예약)",
+      "details": "오후 3시 ~ 3시 15분",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": "15시 ~ 15시 15분 입장시간",
+      "transportation": null,
+      "meals": null,
+      "cost": "€76 (38€ × 2명)",
+      "unit": null
+    },
+    {
+      "date": "4/30",
+      "day_of_week": "목🌲",
+      "title": "마트",
+      "details": "물, 과자, 과일, 빵",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    }
+  ],
+  "프라하": [
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "빈 숙소 출발",
+      "details": "09시 출발",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": "아침(한식), 점심(샌드위치 등), 저녁(식당)",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "빈중앙역 출발",
+      "details": "빈 중앙역 (Vienna, Hbf) 10:39출발 → 15시10 도착",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": "4시간 30분",
+      "checkin_checkout": null,
+      "transportation": "기차(RJET) / 점심 준비(샌드위치, 물, 과일)",
+      "meals": null,
+      "cost": "169,330",
+      "unit": null
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "프라하 역 도착",
+      "details": "Praha 중앙역",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "숙소 이동",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "Praha2의 공동주택",
+      "details": "airbnb 체크인",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": "5.1~5.5",
+      "checkin_checkout": "14시 / 11시",
+      "transportation": "Na Zbořenci 275/10, Praha 2, Hlavní město Praha 120 00",
+      "meals": null,
+      "cost": "1,252,178",
+      "unit": "4박"
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "숙소 주변, 댄싱하우스",
+      "details": "마켓찾기",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "저녁 \"우 플레쿠(U Fleku)\"",
+      "details": "코젤다크, 스비치코바. 구글맵에서 예약해야함",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/1",
+      "day_of_week": "금🏆",
+      "title": "마트",
+      "details": "물, 과자, 과일, 빵",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/2",
+      "day_of_week": "토📡",
+      "title": "구시가지 광장, 천문시계, 하벨시장",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": "아침(한식), 점심(식당), 저녁(숙소)",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/2",
+      "day_of_week": "토📡",
+      "title": "점심 \"코젤로브나 아프로포스\"",
+      "details": "코젤다크, 굴라쉬, 비프타르타르, 스비치코바. 구글맵에서 예약해야함",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/2",
+      "day_of_week": "토📡",
+      "title": "저녁 \"레스토랑 믈리니체\"",
+      "details": "구글맵에서 예약해야함",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/2",
+      "day_of_week": "토📡",
+      "title": "마트 (물,과자,과일,빵) 넉넉",
+      "details": "바나나, 빵, 간식 넉넉!",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/3",
+      "day_of_week": "일🌞",
+      "title": "점심 \"브라우가스호프\"",
+      "details": "송아지 슈니첼(스테이크)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/4",
+      "day_of_week": "월",
+      "title": "프라하성(예약)",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": "아침(숙소), 점심(식당), 저녁(숙소), 굴뚝빵(Trdelnik &amp; Coffee)",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/4",
+      "day_of_week": "월",
+      "title": "점심 \"포크스\" 위치?",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/4",
+      "day_of_week": "월",
+      "title": "저녁 \"메모리 레스토랑\"",
+      "details": "슈니첼, 스테이크 등",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/5",
+      "day_of_week": "화",
+      "title": "인근 산책, 점심(프라하 맛집)",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": "캐리어 맡기기 가능시 산책가능",
+      "meals": "아침(숙소), 점심(식당)",
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/5",
+      "day_of_week": "화",
+      "title": "점심 \"카페 투브르\" 위치?",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/5",
+      "day_of_week": "화",
+      "title": "프라하 바츨라프 하벨 국제공항 출발",
+      "details": "18시 50분 출발 (오후 3시 50분 도착)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    }
+  ],
+  "할슈타트": [
+    {
+      "date": "5/3",
+      "day_of_week": "일🌞",
+      "title": "마이리얼트립(하이프라하) 프라하 숙소 출발 → 체스키프룸로프(1시간) → 히든스팟(30분) → 할슈타트(3시간)",
+      "details": "숙소앞 픽업(05시)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": "간식(과자, 빵, 과일, 물), 아침(휴게소), 점심(식당), 저녁(숙소)",
+      "cost": "15만원 × 3 = 45만원 (2만원 할인) → 163천(1인)",
+      "unit": null
+    },
+    {
+      "date": "5/3",
+      "day_of_week": "일🌞",
+      "title": "점심 \"세호텔 그뤼너 바움\"",
+      "details": "송어구이. 할슈타트에서 점심",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    }
+  ],
+  "대한민국": [
+    {
+      "date": "4/26",
+      "day_of_week": "일",
+      "title": "유스퀘어 출발",
+      "details": "05시 40분 출 (인천 T2)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/6",
+      "day_of_week": "수",
+      "title": "인천국제공항 도착",
+      "details": "13:10 도착",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    },
+    {
+      "date": "5/6",
+      "day_of_week": "수",
+      "title": "광주고속버스터미널행",
+      "details": "오후 2시 40분 (프리미엄)",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": true,
+        "completed": true,
+        "status": "완료"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    }
+  ],
+  "기타": [
+    {
+      "date": "",
+      "day_of_week": "",
+      "title": "존레논벽인근 포크스(점심)",
+      "details": "",
+      "coordinates": null,
+      "google_maps_url": null,
+      "reservation": {
+        "required": false,
+        "completed": false,
+        "status": "시작 전"
+      },
+      "reservation_link": null,
+      "duration": null,
+      "checkin_checkout": null,
+      "transportation": null,
+      "meals": null,
+      "cost": null,
+      "unit": null
+    }
+  ]
+}
