@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { ScheduleItem } from '../types/schedule';
 import { City } from '../types/tripSettings';
