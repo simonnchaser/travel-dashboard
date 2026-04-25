@@ -6,7 +6,7 @@ import { City } from '../types/tripSettings';
 import { supabase } from '../../lib/supabase';
 import { Currency } from '../../lib/currency';
 import CostDisplay from './CostDisplay';
-import CostInput from './CostInput';
+import CostEditModal from './CostEditModal';
 
 interface TableViewProps {
   schedules: ScheduleItem[];
@@ -29,6 +29,10 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
   const [editValue, setEditValue] = useState('');
   const [editCurrency, setEditCurrency] = useState('KRW');
   const [sortBy, setSortBy] = useState<'date' | 'category' | 'city'>('date');
+
+  // Cost edit modal state
+  const [costModalOpen, setCostModalOpen] = useState(false);
+  const [editingCostSchedule, setEditingCostSchedule] = useState<ScheduleItem | null>(null);
 
   // Filter schedules
   let filteredSchedules = [...schedules];
@@ -102,19 +106,10 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
 
         console.log('✅ Updated successfully:', data);
       } else if (editingCell.field === 'date') {
-        // Auto-calculate day of week when date is changed
-        let dayOfWeek = '';
-        if (editValue) {
-          const date = new Date(editValue + 'T00:00:00');
-          const dayIndex = date.getDay();
-          const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-          dayOfWeek = dayNames[dayIndex];
-        }
-
-        // Update both date and day_of_week
+        // Update date only
         const { error } = await supabase
           .from('schedules')
-          .update({ date: editValue, day_of_week: dayOfWeek })
+          .update({ date: editValue })
           .eq('id', schedule.id);
 
         if (error) {
@@ -372,50 +367,52 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
 
   // Cost Cell with Currency Display
   const renderCostCell = (schedule: ScheduleItem) => {
-    const isEditing = editingCell?.id === schedule.id && editingCell?.field === 'cost';
-
     return (
       <td className="px-3 py-2 border-b min-w-[200px]">
-        {isEditing ? (
-          <div className="bg-white border-2 border-indigo-500 rounded-lg p-2 shadow-lg">
-            <CostInput
-              amount={editValue}
-              currency={(editCurrency as Currency) || 'KRW'}
-              onAmountChange={(amount) => setEditValue(amount)}
-              onCurrencyChange={(currency) => setEditCurrency(currency)}
-              label=""
-              placeholder="금액"
-            />
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={() => saveEdit(schedule)}
-                className="flex-1 px-3 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 font-semibold"
-              >
-                ✓ 저장
-              </button>
-              <button
-                onClick={() => setEditingCell(null)}
-                className="flex-1 px-3 py-1 bg-gray-300 text-gray-700 rounded text-xs hover:bg-gray-400 font-semibold"
-              >
-                ✕ 취소
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div
-            onClick={() => startEditing(schedule.id!, 'cost', schedule.cost, schedule.currency || 'KRW')}
-            className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded min-h-[30px]"
-            title="클릭하여 편집"
-          >
-            {schedule.cost ? (
-              <CostDisplay amount={schedule.cost} currency={schedule.currency} />
-            ) : (
-              <span className="text-gray-400 text-xs">클릭하여 입력</span>
-            )}
-          </div>
-        )}
+        <div
+          onClick={() => {
+            setEditingCostSchedule(schedule);
+            setCostModalOpen(true);
+          }}
+          className="cursor-pointer hover:bg-indigo-50 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-indigo-200"
+          title="클릭하여 편집"
+        >
+          {schedule.cost ? (
+            <CostDisplay amount={schedule.cost} currency={schedule.currency} numPeople={schedule.num_people} />
+          ) : (
+            <span className="text-gray-400 text-xs">💰 클릭하여 입력</span>
+          )}
+        </div>
       </td>
     );
+  };
+
+  const handleCostSave = async (amount: string, currency: Currency, numPeople: number) => {
+    if (!editingCostSchedule?.id) return;
+
+    console.log('💾 Saving cost - amount:', amount, 'currency:', currency, 'numPeople:', numPeople);
+
+    const updateData = {
+      cost: amount,
+      currency: currency,
+      num_people: numPeople,
+    };
+
+    console.log('💾 Update data:', updateData);
+
+    const { data, error } = await supabase
+      .from('schedules')
+      .update(updateData)
+      .eq('id', editingCostSchedule.id)
+      .select();
+
+    if (!error) {
+      console.log('✅ Updated successfully:', data);
+      onUpdate();
+    } else {
+      console.error('❌ Failed to update cost:', error);
+      alert('비용 업데이트 실패!');
+    }
   };
 
   // Regular Text Cell
@@ -643,6 +640,19 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
         카테고리와 도시는 드롭다운에서 선택하고, 날짜와 시간은 피커를 사용하세요.
         Enter로 저장, Escape로 취소합니다.
       </div>
+
+      {/* Cost Edit Modal */}
+      <CostEditModal
+        isOpen={costModalOpen}
+        onClose={() => {
+          setCostModalOpen(false);
+          setEditingCostSchedule(null);
+        }}
+        onSave={handleCostSave}
+        initialAmount={editingCostSchedule?.cost || ''}
+        initialCurrency={(editingCostSchedule?.currency as Currency) || 'KRW'}
+        initialNumPeople={editingCostSchedule?.num_people || 1}
+      />
     </div>
   );
 }

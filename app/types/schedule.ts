@@ -29,7 +29,6 @@ export interface ScheduleItem {
   city?: string;
   city_id?: string; // New: city identifier from trip_settings
   date: string;
-  day_of_week: string;
   time?: string;
   title: string;
   details: string;
@@ -37,6 +36,7 @@ export interface ScheduleItem {
   coordinates: Coordinates | null;
   cost: string | null;
   currency?: string;
+  num_people?: number; // Number of people for cost calculation
   unit: string | null;
   reservation: Reservation;
   reservation_link: string | null;

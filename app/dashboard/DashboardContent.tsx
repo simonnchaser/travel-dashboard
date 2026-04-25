@@ -94,7 +94,8 @@ export default function DashboardContent() {
         .from('schedules')
         .select('*')
         .eq('project_id', projectId)
-        .order('date', { ascending: true });
+        .order('date', { ascending: true })
+        .order('time', { ascending: true });
 
       if (error) throw error;
 
@@ -113,7 +114,6 @@ export default function DashboardContent() {
           city: schedule.city,
           city_id: schedule.city_id,
           date: schedule.date,
-          day_of_week: schedule.day_of_week || '',
           time: schedule.time,
           title: schedule.title,
           details: schedule.details || '',
@@ -129,6 +129,7 @@ export default function DashboardContent() {
           reservation_link: schedule.reservation_link,
           cost: schedule.cost,
           currency: schedule.currency,
+          num_people: schedule.num_people,
           unit: schedule.unit,
           notes: schedule.notes,
           category: schedule.category || 'activity',

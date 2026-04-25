@@ -29,12 +29,12 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
   const [selectedCityId, setSelectedCityId] = useState<string>(cities[0]?.id || '');
   const [formData, setFormData] = useState<any>({
     date: '',
-    day_of_week: '',
     time: '09:00',
     title: '',
     details: '',
     cost: '',
     currency: 'KRW' as Currency,
+    num_people: 1,
     google_maps_url: '',
     reservation_status: '예정',
     tour_spots: [],
@@ -77,7 +77,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.date || !formData.day_of_week || !formData.title) {
+    if (!formData.date || !formData.title) {
       alert('필수 항목을 모두 입력해주세요!');
       return;
     }
@@ -91,12 +91,12 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
         city_id: selectedCityId,
         category: category,
         date: formData.date,
-        day_of_week: formData.day_of_week,
         time: formData.time,
         title: formData.title,
         details: formData.details,
         cost: formData.cost,
         currency: formData.currency,
+        num_people: formData.num_people || 1,
         google_maps_url: formData.google_maps_url,
         reservation_completed: formData.reservation_status === '완료',
         reservation_status: formData.reservation_status,
@@ -153,13 +153,15 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
       // Reset form
       setFormData({
         date: '',
-        day_of_week: '',
         time: '09:00',
         title: '',
         details: '',
         cost: '',
+        currency: 'KRW' as Currency,
+        num_people: 1,
         google_maps_url: '',
-        reservation_required: false,
+        reservation_status: '예정',
+        tour_spots: [],
       });
       setCategory('activity');
       setSelectedCityId(cities[0]?.id || '');
@@ -236,32 +238,9 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) => {
-                  const selectedDate = e.target.value;
-                  // Auto-calculate day of week
-                  let dayOfWeek = '';
-                  if (selectedDate) {
-                    const date = new Date(selectedDate + 'T00:00:00');
-                    const dayIndex = date.getDay();
-                    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-                    dayOfWeek = dayNames[dayIndex];
-                  }
-                  setFormData({ ...formData, date: selectedDate, day_of_week: dayOfWeek });
-                }}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 required
-              />
-            </div>
-
-            {/* Day of Week - Auto-calculated, disabled */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">요일</label>
-              <input
-                type="text"
-                value={formData.day_of_week ? `${formData.day_of_week}요일` : ''}
-                disabled
-                className="w-full p-3 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-600"
-                placeholder="날짜를 선택하면 자동 입력됩니다"
               />
             </div>
 
@@ -302,12 +281,14 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
             />
           </div>
 
-          {/* Cost with Currency Selector */}
+          {/* Cost with Currency Selector and Number of People */}
           <CostInput
             amount={formData.cost}
             currency={formData.currency}
+            numPeople={formData.num_people}
             onAmountChange={(amount) => setFormData({ ...formData, cost: amount })}
             onCurrencyChange={(currency) => setFormData({ ...formData, currency })}
+            onNumPeopleChange={(numPeople) => setFormData({ ...formData, num_people: numPeople })}
             placeholder="50,000"
           />
 
@@ -320,7 +301,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
                   장소 검색
                   <span className="text-xs text-gray-500 ml-2">(구글맵에서 검색)</span>
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     value={formData.address || ''}
@@ -339,7 +320,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
                       window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
                     }}
                     disabled={!formData.address && !formData.title}
-                    className="px-4 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="w-full sm:w-auto px-4 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     🔍 검색
                   </button>

@@ -63,19 +63,23 @@ export default function CostKpiDashboard({ schedules }: CostKpiDashboardProps) {
       for (const schedule of schedules) {
         if (!schedule.cost) continue;
 
-        const amount = parseFloat(schedule.cost.replace(/,/g, ''));
-        if (isNaN(amount)) continue;
+        const perPersonAmount = parseFloat(schedule.cost.replace(/,/g, ''));
+        if (isNaN(perPersonAmount)) continue;
+
+        // Calculate total amount (per person × num_people)
+        const numPeople = schedule.num_people || 1;
+        const totalAmount = perPersonAmount * numPeople;
 
         const currency = (schedule.currency || 'KRW') as Currency;
 
-        // Aggregate by currency
+        // Aggregate by currency (using total amount)
         if (!byCurrency[currency]) {
           byCurrency[currency] = 0;
         }
-        byCurrency[currency] += amount;
+        byCurrency[currency] += totalAmount;
 
-        // Convert to KRW for total
-        const amountInKRW = await convertCurrency(amount, currency, 'KRW');
+        // Convert to KRW for total (using total amount)
+        const amountInKRW = await convertCurrency(totalAmount, currency, 'KRW');
         if (amountInKRW !== null) {
           totalKRW += amountInKRW;
 

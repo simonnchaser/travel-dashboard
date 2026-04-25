@@ -82,12 +82,12 @@ export default function ScheduleCard({
         const updateData: any = {
           category: editedSchedule.category,
           date: editedSchedule.date,
-          day_of_week: editedSchedule.day_of_week,
           time: editedSchedule.time,
           title: editedSchedule.title,
           details: editedSchedule.details,
           cost: editedSchedule.cost,
           currency: editedSchedule.currency || 'KRW',
+          num_people: editedSchedule.num_people || 1,
           google_maps_url: editedSchedule.google_maps_url,
           reservation_status: editedSchedule.reservation.status,
           reservation_completed: editedSchedule.reservation.status === '완료',
@@ -157,7 +157,7 @@ export default function ScheduleCard({
             <div>
               <h3 className="text-xl font-bold text-gray-800">{schedule.title}</h3>
               <p className="text-sm text-gray-500">
-                {schedule.date} ({schedule.day_of_week}) {schedule.time && `- ${schedule.time}`}
+                {schedule.date} {schedule.time && `- ${schedule.time}`}
               </p>
               <p className="text-xs text-gray-400 mt-1">{categoryLabels[schedule.category]}</p>
             </div>
@@ -169,7 +169,7 @@ export default function ScheduleCard({
             {schedule.cost && (
               <div className="flex items-center gap-1">
                 <span>💰</span>
-                <CostDisplay amount={schedule.cost} currency={schedule.currency} />
+                <CostDisplay amount={schedule.cost} currency={schedule.currency} numPeople={schedule.num_people} />
               </div>
             )}
 
@@ -224,7 +224,7 @@ export default function ScheduleCard({
               <div>
                 <h3 className="text-lg font-bold text-gray-800">{schedule.title}</h3>
                 <p className="text-xs text-gray-500 mt-1">
-                  {schedule.date} ({schedule.day_of_week}) {schedule.time && `${schedule.time}`}
+                  {schedule.date} {schedule.time && `- ${schedule.time}`}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">{categoryLabels[schedule.category]}</p>
               </div>
@@ -240,7 +240,7 @@ export default function ScheduleCard({
             {schedule.cost && (
               <div className="flex items-center gap-1 text-sm">
                 <span>💰</span>
-                <CostDisplay amount={schedule.cost} currency={schedule.currency} />
+                <CostDisplay amount={schedule.cost} currency={schedule.currency} numPeople={schedule.num_people} />
               </div>
             )}
 
@@ -301,7 +301,7 @@ export default function ScheduleCard({
                       <span className="text-xl">💰</span>
                       <div>
                         <p className="text-sm font-semibold text-gray-700 mb-1">비용</p>
-                        <CostDisplay amount={schedule.cost} currency={schedule.currency} />
+                        <CostDisplay amount={schedule.cost} currency={schedule.currency} numPeople={schedule.num_people} />
                       </div>
                     </div>
                   )}
@@ -553,50 +553,29 @@ export default function ScheduleCard({
                     <input
                       type="date"
                       value={editedSchedule.date}
-                      onChange={(e) => {
-                        const selectedDate = e.target.value;
-                        // Auto-calculate day of week
-                        let dayOfWeek = '';
-                        if (selectedDate) {
-                          const date = new Date(selectedDate + 'T00:00:00');
-                          const dayIndex = date.getDay();
-                          const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-                          dayOfWeek = dayNames[dayIndex];
-                        }
-                        setEditedSchedule({ ...editedSchedule, date: selectedDate, day_of_week: dayOfWeek });
-                      }}
+                      onChange={(e) => setEditedSchedule({ ...editedSchedule, date: e.target.value })}
                       className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">요일</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">시간</label>
                     <input
-                      type="text"
-                      value={editedSchedule.day_of_week ? `${editedSchedule.day_of_week}요일` : ''}
-                      disabled
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-600"
-                      placeholder="날짜를 선택하면 자동 입력됩니다"
+                      type="time"
+                      value={editedSchedule.time || ''}
+                      onChange={(e) => setEditedSchedule({ ...editedSchedule, time: e.target.value })}
+                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
-                {/* Time */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">시간</label>
-                  <input
-                    type="time"
-                    value={editedSchedule.time || ''}
-                    onChange={(e) => setEditedSchedule({ ...editedSchedule, time: e.target.value })}
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                {/* Cost with Currency */}
+                {/* Cost with Currency and Number of People */}
                 <CostInput
                   amount={editedSchedule.cost || ''}
                   currency={(editedSchedule.currency as Currency) || 'KRW'}
+                  numPeople={editedSchedule.num_people || 1}
                   onAmountChange={(amount) => setEditedSchedule({ ...editedSchedule, cost: amount })}
                   onCurrencyChange={(currency) => setEditedSchedule({ ...editedSchedule, currency })}
+                  onNumPeopleChange={(numPeople) => setEditedSchedule({ ...editedSchedule, num_people: numPeople })}
                   placeholder="50,000"
                 />
 
