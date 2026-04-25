@@ -20,6 +20,7 @@ const categoryLabels: Record<ScheduleCategory, string> = {
   dining: '🍽️ 식사',
   activity: '🎭 관광/액티비티',
   transport: '🚌 이동/교통',
+  tour: '🎯 투어',
 };
 
 const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
@@ -37,8 +38,41 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
     currency: 'KRW' as Currency,
     google_maps_url: '',
     reservation_status: '예정',
+    tour_spots: [],
   });
   const [saving, setSaving] = useState(false);
+
+  // 투어 스팟 추가
+  const addTourSpot = () => {
+    const newSpot = {
+      id: `spot-${Date.now()}`,
+      name: '',
+      duration: '',
+      order: (formData.tour_spots?.length || 0) + 1,
+    };
+    setFormData({
+      ...formData,
+      tour_spots: [...(formData.tour_spots || []), newSpot],
+    });
+  };
+
+  // 투어 스팟 제거
+  const removeTourSpot = (spotId: string) => {
+    setFormData({
+      ...formData,
+      tour_spots: formData.tour_spots?.filter((spot: any) => spot.id !== spotId) || [],
+    });
+  };
+
+  // 투어 스팟 수정
+  const updateTourSpot = (spotId: string, field: string, value: string) => {
+    setFormData({
+      ...formData,
+      tour_spots: formData.tour_spots?.map((spot: any) =>
+        spot.id === spotId ? { ...spot, [field]: value } : spot
+      ) || [],
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +132,13 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
           arrival_google_maps_url: formData.arrival_google_maps_url,
           departure_time: formData.departure_time,
           arrival_time: formData.arrival_time,
+        };
+      } else if (category === 'tour') {
+        categoryData = {
+          meeting_location: formData.meeting_location,
+          meeting_time: formData.meeting_time,
+          tour_guide: formData.tour_guide,
+          tour_spots: formData.tour_spots || [],
         };
       }
 
@@ -585,6 +626,97 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
                     placeholder="3시간"
                     className="w-full p-3 border-2 border-orange-300 rounded-lg"
                   />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {category === 'tour' && (
+            <div className="bg-yellow-50 p-4 rounded-lg space-y-4 border-2 border-yellow-200">
+              <h4 className="font-semibold text-yellow-900 mb-3">🎯 투어 정보</h4>
+
+              {/* 집합 장소 & 시간 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-yellow-800 mb-2">집합 장소</label>
+                  <input
+                    type="text"
+                    value={formData.meeting_location || ''}
+                    onChange={(e) => setFormData({ ...formData, meeting_location: e.target.value })}
+                    placeholder="예: 호텔 로비"
+                    className="w-full p-3 border-2 border-yellow-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-yellow-800 mb-2">집합 시간</label>
+                  <input
+                    type="time"
+                    value={formData.meeting_time || ''}
+                    onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })}
+                    className="w-full p-3 border-2 border-yellow-300 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              {/* 가이드 정보 */}
+              <div>
+                <label className="block text-sm font-semibold text-yellow-800 mb-2">가이드 정보</label>
+                <input
+                  type="text"
+                  value={formData.tour_guide || ''}
+                  onChange={(e) => setFormData({ ...formData, tour_guide: e.target.value })}
+                  placeholder="예: 김투어 가이드 (010-1234-5678)"
+                  className="w-full p-3 border-2 border-yellow-300 rounded-lg"
+                />
+              </div>
+
+              {/* 투어 스팟 목록 */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-semibold text-yellow-800">투어 스팟</label>
+                  <button
+                    type="button"
+                    onClick={addTourSpot}
+                    className="px-3 py-1.5 bg-yellow-600 text-white rounded-lg text-sm font-semibold hover:bg-yellow-700 transition-all"
+                  >
+                    + 스팟 추가
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {formData.tour_spots?.map((spot: any, index: number) => (
+                    <div key={spot.id} className="bg-white p-3 rounded-lg border-2 border-yellow-300 space-y-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-bold text-yellow-700">스팟 #{index + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeTourSpot(spot.id)}
+                          className="text-red-600 hover:text-red-800 text-sm font-semibold"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          value={spot.name}
+                          onChange={(e) => updateTourSpot(spot.id, 'name', e.target.value)}
+                          placeholder="장소명"
+                          className="p-2 border-2 border-yellow-200 rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          value={spot.duration}
+                          onChange={(e) => updateTourSpot(spot.id, 'duration', e.target.value)}
+                          placeholder="소요 시간 (예: 1시간 30분)"
+                          className="p-2 border-2 border-yellow-200 rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {(!formData.tour_spots || formData.tour_spots.length === 0) && (
+                    <p className="text-sm text-gray-500 text-center py-4">스팟을 추가해주세요</p>
+                  )}
                 </div>
               </div>
             </div>

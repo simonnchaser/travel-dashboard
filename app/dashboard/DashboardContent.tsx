@@ -334,11 +334,11 @@ export default function DashboardContent() {
                 onClick={() => setReservationFilter('required')}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   reservationFilter === 'required'
-                    ? 'bg-orange-600 text-white shadow-md'
+                    ? 'bg-gray-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                예약 필요
+                예정
               </button>
               <button
                 onClick={() => setReservationFilter('completed')}
@@ -348,7 +348,7 @@ export default function DashboardContent() {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                예약 완료
+                완료
               </button>
               <button
                 onClick={() => setReservationFilter('unnecessary')}

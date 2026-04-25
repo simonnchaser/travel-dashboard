@@ -11,7 +11,15 @@ export interface Reservation {
   status: ReservationStatus;
 }
 
-export type ScheduleCategory = 'accommodation' | 'dining' | 'activity' | 'transport';
+export type ScheduleCategory = 'accommodation' | 'dining' | 'activity' | 'transport' | 'tour';
+
+// Tour spot interface
+export interface TourSpot {
+  id: string;
+  name: string;
+  duration: string; // 소요 시간 (예: "1시간 30분")
+  order: number; // 방문 순서
+}
 
 // Unified schedule item with all possible fields
 export interface ScheduleItem {
@@ -59,6 +67,12 @@ export interface ScheduleItem {
   arrival_google_maps_url?: string | null;
   departure_time?: string; // 출발 시간
   arrival_time?: string;   // 도착 시간
+
+  // Tour fields
+  meeting_location?: string; // 집합 장소
+  meeting_time?: string;     // 집합 시간
+  tour_spots?: TourSpot[];   // 투어 스팟 목록
+  tour_guide?: string;       // 가이드 이름/연락처
 
   // Legacy fields (for backward compatibility)
   transportation?: string;

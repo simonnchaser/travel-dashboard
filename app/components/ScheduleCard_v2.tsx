@@ -21,6 +21,7 @@ const categoryLabels: Record<ScheduleCategory, string> = {
   dining: '🍽️ 식사',
   activity: '🎭 관광/액티비티',
   transport: '🚌 이동/교통',
+  tour: '🎯 투어',
 };
 
 const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
@@ -411,6 +412,48 @@ export default function ScheduleCard({
                       <div>
                         <p className="text-sm font-semibold text-gray-700">소요 시간</p>
                         <p className="text-gray-600">{schedule.travel_duration}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {schedule.category === 'tour' && (
+                  <div className="bg-yellow-50 p-4 rounded-lg space-y-3">
+                    <h4 className="font-semibold text-yellow-900 mb-3">🎯 투어 정보</h4>
+                    {schedule.meeting_location && (
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700">집합 장소</p>
+                        <p className="text-gray-600">{schedule.meeting_location}</p>
+                      </div>
+                    )}
+                    {schedule.meeting_time && (
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700">집합 시간</p>
+                        <p className="text-gray-600">{schedule.meeting_time}</p>
+                      </div>
+                    )}
+                    {schedule.tour_guide && (
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700">가이드</p>
+                        <p className="text-gray-600">{schedule.tour_guide}</p>
+                      </div>
+                    )}
+                    {schedule.tour_spots && schedule.tour_spots.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700 mb-2">투어 스팟</p>
+                        <div className="space-y-2">
+                          {schedule.tour_spots.sort((a, b) => a.order - b.order).map((spot, idx) => (
+                            <div key={spot.id} className="bg-white p-3 rounded border border-yellow-200">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-bold text-yellow-700">#{idx + 1}</span>
+                                  <span className="font-medium text-gray-800">{spot.name}</span>
+                                </div>
+                                <span className="text-sm text-gray-600">⏱️ {spot.duration}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
