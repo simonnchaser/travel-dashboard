@@ -6,6 +6,7 @@ import { City } from '../types/tripSettings';
 import { supabase } from '../../lib/supabase';
 import { Currency } from '../../lib/currency';
 import CostInput from './CostInput';
+import AutoExpandTextarea from './AutoExpandTextarea';
 
 interface AddScheduleModalProps {
   isOpen: boolean;
@@ -272,11 +273,12 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
           {/* Details */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">상세 내용</label>
-            <textarea
+            <AutoExpandTextarea
               value={formData.details}
               onChange={(e) => setFormData({ ...formData, details: e.target.value })}
               placeholder="상세 일정"
-              rows={3}
+              minRows={3}
+              maxRows={10}
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
           </div>
@@ -701,11 +703,12 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
                             className="p-2 border-2 border-yellow-200 rounded-lg"
                           />
                         </div>
-                        <textarea
+                        <AutoExpandTextarea
                           value={spot.details || ''}
                           onChange={(e) => updateTourSpot(spot.id, 'details', e.target.value)}
                           placeholder="상세 정보 (예: 입장료, 특이사항 등)"
-                          rows={2}
+                          minRows={2}
+                          maxRows={8}
                           className="w-full p-2 border-2 border-yellow-200 rounded-lg"
                         />
                       </div>

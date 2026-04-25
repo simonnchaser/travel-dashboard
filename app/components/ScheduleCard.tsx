@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { ScheduleItem } from '../types/schedule';
+import AutoExpandTextarea from './AutoExpandTextarea';
+import { Linkify } from '../../lib/linkify';
 
 interface ScheduleCardProps {
   schedule: ScheduleItem;
@@ -62,7 +64,9 @@ export default function ScheduleCard({
             </div>
 
             {schedule.details && (
-              <p className="text-gray-600 mt-2">{schedule.details}</p>
+              <p className="text-gray-600 mt-2">
+                <Linkify>{schedule.details}</Linkify>
+              </p>
             )}
           </div>
 
@@ -193,12 +197,13 @@ export default function ScheduleCard({
 
             {isEditing ? (
               <div>
-                <textarea
+                <AutoExpandTextarea
                   value={editedNotes}
                   onChange={(e) => setEditedNotes(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  rows={3}
                   placeholder="메모를 입력하세요..."
+                  minRows={3}
+                  maxRows={10}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
                 <div className="flex gap-2 mt-2">
                   <button
@@ -220,7 +225,11 @@ export default function ScheduleCard({
               </div>
             ) : (
               <p className="text-gray-600">
-                {schedule.notes || '메모가 없습니다. 편집 버튼을 눌러 추가하세요.'}
+                {schedule.notes ? (
+                  <Linkify>{schedule.notes}</Linkify>
+                ) : (
+                  '메모가 없습니다. 편집 버튼을 눌러 추가하세요.'
+                )}
               </p>
             )}
           </div>

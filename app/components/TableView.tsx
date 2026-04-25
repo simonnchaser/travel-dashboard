@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { Currency } from '../../lib/currency';
 import CostDisplay from './CostDisplay';
 import CostEditModal from './CostEditModal';
+import { Linkify } from '../../lib/linkify';
 
 interface TableViewProps {
   schedules: ScheduleItem[];
@@ -460,7 +461,7 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
             className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded min-h-[30px] text-sm"
             title="클릭하여 편집"
           >
-            {value || <span className="text-gray-400 text-xs">클릭하여 입력</span>}
+            {value ? <Linkify>{value}</Linkify> : <span className="text-gray-400 text-xs">클릭하여 입력</span>}
           </div>
         )}
       </td>

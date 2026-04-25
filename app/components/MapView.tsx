@@ -16,13 +16,6 @@ interface MapViewProps {
   schedules: ScheduleItem[];
 }
 
-const categoryLabels = {
-  accommodation: '숙박',
-  dining: '식사',
-  activity: '액티비티',
-  transport: '교통',
-};
-
 interface LocationWithIndex extends ScheduleItem {
   coords: { lat: number; lng: number };
   originalIndex: number;
@@ -388,7 +381,7 @@ export default function MapView({ schedules }: MapViewProps) {
 
         // Add markers for each location with custom labels
         locations.forEach((location, index) => {
-          const { coords, title, city, category, date, time, cost, currency } = location;
+          const { coords, title } = location;
 
           // Create marker color based on city
           const color = getCityColor(location.city_id || 'default');
@@ -472,52 +465,9 @@ export default function MapView({ schedules }: MapViewProps) {
           );
           titleOverlay.setMap(map.current);
 
-          // Create popup content
-          const popupContent = `
-            <div style="padding: 8px; max-width: 250px;">
-              <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #1f2937;">
-                #${index + 1} ${title}
-              </h3>
-              <div style="font-size: 14px; color: #6b7280; margin-bottom: 4px;">
-                📅 ${date} ${time ? `- ${time}` : ''}
-              </div>
-              <div style="font-size: 14px; color: #6b7280; margin-bottom: 4px;">
-                📍 ${city}
-              </div>
-              <div style="font-size: 14px; color: #6b7280; margin-bottom: 4px;">
-                🏷️ ${categoryLabels[category as keyof typeof categoryLabels] || category}
-              </div>
-              ${cost ? `
-                <div style="font-size: 14px; color: #4f46e5; font-weight: 600; margin-top: 8px;">
-                  💰 ${cost} ${currency || 'KRW'}
-                </div>
-              ` : ''}
-              ${location.google_maps_url ? `
-                <a
-                  href="${location.google_maps_url}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style="display: inline-block; margin-top: 8px; color: #4f46e5; text-decoration: underline; font-size: 13px;"
-                >
-                  구글맵에서 보기 →
-                </a>
-              ` : ''}
-              <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
-                💡 클릭해서 두 지점 선택 시 경로 표시
-              </div>
-            </div>
-          `;
-
-          const infoWindow = new window.google.maps.InfoWindow({
-            content: popupContent
-          });
-
-          // Update click handler to support selection
+          // Update click handler to support selection only (no info window)
           marker.addListener('click', async () => {
-            // Handle selection first
             await handleMarkerClick(index);
-            // Then show info window
-            infoWindow.open(map.current, marker);
           });
 
           markersRef.current.push(marker);
