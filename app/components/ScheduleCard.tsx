@@ -56,7 +56,7 @@ export default function ScheduleCard({
               <div>
                 <h3 className="text-xl font-bold text-gray-800">{schedule.title}</h3>
                 <p className="text-sm text-gray-500">
-                  {schedule.date} ({schedule.day_of_week})
+                  {schedule.date}
                 </p>
               </div>
             </div>

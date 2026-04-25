@@ -15,7 +15,6 @@ export default function AddScheduleModal({ isOpen, onClose, city, onScheduleAdde
   const [category, setCategory] = useState<ScheduleCategory>('activity');
   const [formData, setFormData] = useState<any>({
     date: '',
-    day_of_week: '',
     time: '',
     title: '',
     details: '',
@@ -34,7 +33,6 @@ export default function AddScheduleModal({ isOpen, onClose, city, onScheduleAdde
         city: city,
         category: category,
         date: formData.date,
-        day_of_week: formData.day_of_week,
         time: formData.time,
         title: formData.title,
         details: formData.details,
@@ -85,7 +83,6 @@ export default function AddScheduleModal({ isOpen, onClose, city, onScheduleAdde
       // Reset form
       setFormData({
         date: '',
-        day_of_week: '',
         time: '',
         title: '',
         details: '',
