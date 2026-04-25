@@ -101,6 +101,27 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
         }
 
         console.log('✅ Updated successfully:', data);
+      } else if (editingCell.field === 'date') {
+        // Auto-calculate day of week when date is changed
+        let dayOfWeek = '';
+        if (editValue) {
+          const date = new Date(editValue + 'T00:00:00');
+          const dayIndex = date.getDay();
+          const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+          dayOfWeek = dayNames[dayIndex];
+        }
+
+        // Update both date and day_of_week
+        const { error } = await supabase
+          .from('schedules')
+          .update({ date: editValue, day_of_week: dayOfWeek })
+          .eq('id', schedule.id);
+
+        if (error) {
+          console.error('Failed to update date:', error);
+          alert('날짜 업데이트 실패!');
+          return;
+        }
       } else {
         await updateField(schedule.id, editingCell.field, editValue);
       }

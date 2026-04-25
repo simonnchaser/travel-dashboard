@@ -23,7 +23,6 @@ const categoryLabels: Record<ScheduleCategory, string> = {
   tour: '🎯 투어',
 };
 
-const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
 
 export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAdded, projectId }: AddScheduleModalProps) {
   const [category, setCategory] = useState<ScheduleCategory>('activity');
@@ -237,26 +236,33 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  // Auto-calculate day of week
+                  let dayOfWeek = '';
+                  if (selectedDate) {
+                    const date = new Date(selectedDate + 'T00:00:00');
+                    const dayIndex = date.getDay();
+                    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                    dayOfWeek = dayNames[dayIndex];
+                  }
+                  setFormData({ ...formData, date: selectedDate, day_of_week: dayOfWeek });
+                }}
                 className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* Day of Week */}
+            {/* Day of Week - Auto-calculated, disabled */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">요일 *</label>
-              <select
-                value={formData.day_of_week}
-                onChange={(e) => setFormData({ ...formData, day_of_week: e.target.value })}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                required
-              >
-                <option value="">선택하세요</option>
-                {daysOfWeek.map((day) => (
-                  <option key={day} value={day}>{day}요일</option>
-                ))}
-              </select>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">요일</label>
+              <input
+                type="text"
+                value={formData.day_of_week ? `${formData.day_of_week}요일` : ''}
+                disabled
+                className="w-full p-3 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                placeholder="날짜를 선택하면 자동 입력됩니다"
+              />
             </div>
 
             {/* Time */}

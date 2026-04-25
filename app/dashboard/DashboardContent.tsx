@@ -37,7 +37,7 @@ export default function DashboardContent() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'card' | 'table' | 'map'>('card');
   const [reservationFilter, setReservationFilter] = useState<ReservationFilter>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'category' | 'city'>('date');
+  const [sortBy, setSortBy] = useState<'time' | 'category' | 'city'>('time');
 
   const cardViewRef = useRef<HTMLDivElement>(null);
 
@@ -217,8 +217,15 @@ export default function DashboardContent() {
     // Sort
     const sorted = [...filtered];
     sorted.sort((a, b) => {
-      if (sortBy === 'date') {
-        return a.date.localeCompare(b.date);
+      if (sortBy === 'time') {
+        // Sort by date first, then by time
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+
+        // If same date, sort by time (earlier times first)
+        const timeA = a.time || '00:00';
+        const timeB = b.time || '00:00';
+        return timeA.localeCompare(timeB);
       } else if (sortBy === 'category') {
         return a.category.localeCompare(b.category);
       } else {
@@ -385,14 +392,14 @@ export default function DashboardContent() {
                 <div className="flex flex-wrap gap-2 sm:ml-auto">
                   <span className="text-sm font-semibold text-gray-700 self-center mr-2">정렬:</span>
                   <button
-                    onClick={() => setSortBy('date')}
+                    onClick={() => setSortBy('time')}
                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      sortBy === 'date'
+                      sortBy === 'time'
                         ? 'bg-purple-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    날짜순
+                    시간순
                   </button>
                   <button
                     onClick={() => setSortBy('category')}
