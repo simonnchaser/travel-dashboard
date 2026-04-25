@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ScheduleItem } from '../types/schedule';
 import { City } from '../types/tripSettings';
 import CityTabs from '../components/CityTabs';
@@ -23,6 +23,8 @@ interface Project {
   end_date: string;
 }
 
+type ReservationFilter = 'all' | 'required' | 'completed' | 'unnecessary';
+
 export default function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,6 +36,9 @@ export default function DashboardContent() {
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'card' | 'table' | 'map'>('card');
+  const [reservationFilter, setReservationFilter] = useState<ReservationFilter>('all');
+
+  const cardViewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (projectId) {
@@ -177,6 +182,38 @@ export default function DashboardContent() {
     return city?.name || cityId;
   }
 
+  // Scroll to card view and switch to selected city
+  function scrollToCardView() {
+    if (cardViewRef.current) {
+      cardViewRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Handle city card click
+  function handleCityClick(cityId: string) {
+    setViewMode('card');
+    setSelectedCityId(cityId);
+    setReservationFilter('all');
+    setTimeout(() => scrollToCardView(), 100);
+  }
+
+  // Handle reservation filter click
+  function handleReservationFilterClick(cityId: string, filter: 'required' | 'completed') {
+    setViewMode('card');
+    setSelectedCityId(cityId);
+    setReservationFilter(filter);
+    setTimeout(() => scrollToCardView(), 100);
+  }
+
+  // Filter schedules based on reservation status
+  function getFilteredSchedules(schedules: ScheduleItem[]): ScheduleItem[] {
+    if (reservationFilter === 'all') return schedules;
+    if (reservationFilter === 'required') return schedules.filter(s => s.reservation.required && !s.reservation.completed);
+    if (reservationFilter === 'completed') return schedules.filter(s => s.reservation.completed);
+    if (reservationFilter === 'unnecessary') return schedules.filter(s => s.reservation.status === '불필요');
+    return schedules;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -215,7 +252,12 @@ export default function DashboardContent() {
         </div>
 
         {/* Stats Overview */}
-        <StatsCard scheduleData={scheduleData} cities={project.cities} />
+        <StatsCard
+          scheduleData={scheduleData}
+          cities={project.cities}
+          onCityClick={handleCityClick}
+          onReservationFilterClick={handleReservationFilterClick}
+        />
 
         {/* Cost KPI Dashboard */}
         <CostKpiDashboard schedules={Object.values(scheduleData).flat()} />
@@ -265,18 +307,67 @@ export default function DashboardContent() {
 
         {/* City Tabs - Only show in card view */}
         {viewMode === 'card' && (
-          <CityTabs
-            selectedCityId={selectedCityId}
-            onCityChange={setSelectedCityId}
-            scheduleData={scheduleData}
-            cities={project.cities}
-          />
+          <div ref={cardViewRef}>
+            <CityTabs
+              selectedCityId={selectedCityId}
+              onCityChange={(cityId) => {
+                setSelectedCityId(cityId);
+                setReservationFilter('all');
+              }}
+              scheduleData={scheduleData}
+              cities={project.cities}
+            />
+
+            {/* Filter Buttons */}
+            <div className="mb-6 flex flex-wrap gap-2 bg-white rounded-lg shadow p-4">
+              <button
+                onClick={() => setReservationFilter('all')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  reservationFilter === 'all'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                전체
+              </button>
+              <button
+                onClick={() => setReservationFilter('required')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  reservationFilter === 'required'
+                    ? 'bg-orange-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                예약 필요
+              </button>
+              <button
+                onClick={() => setReservationFilter('completed')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  reservationFilter === 'completed'
+                    ? 'bg-green-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                예약 완료
+              </button>
+              <button
+                onClick={() => setReservationFilter('unnecessary')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  reservationFilter === 'unnecessary'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                불필요
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Content - Card View, Table View, or Map View */}
         {viewMode === 'card' ? (
           <ScheduleList
-            schedules={scheduleData[selectedCityId] || []}
+            schedules={getFilteredSchedules(scheduleData[selectedCityId] || [])}
             cityId={selectedCityId}
             cityName={getCityName(selectedCityId)}
             onUpdate={(updatedSchedules) => {

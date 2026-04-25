@@ -24,6 +24,7 @@ export default function MapView({ schedules }: MapViewProps) {
 
   useEffect(() => {
     if (!mapContainer.current) return;
+    if (map.current) return; // Map already initialized
 
     // Mapbox access token (you'll need to add this to .env.local)
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJjbGV4YW1wbGUifQ.example';
@@ -90,6 +91,14 @@ export default function MapView({ schedules }: MapViewProps) {
       // Add route lines for transport schedules
       transportRoutes.forEach((route, index) => {
         const lineId = `route-${index}`;
+
+        // Remove existing source and layer if they exist
+        if (map.current!.getLayer(lineId)) {
+          map.current!.removeLayer(lineId);
+        }
+        if (map.current!.getSource(lineId)) {
+          map.current!.removeSource(lineId);
+        }
 
         // Add the route line
         map.current!.addSource(lineId, {
@@ -270,6 +279,7 @@ export default function MapView({ schedules }: MapViewProps) {
     return () => {
       if (map.current) {
         map.current.remove();
+        map.current = null;
       }
     };
   }, [schedules]);
