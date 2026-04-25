@@ -257,21 +257,28 @@ export default function DashboardContent() {
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
-              {project.project_name}
-            </h1>
-            <p className="text-gray-600 text-lg">
-              {project.start_date} - {project.end_date}
-            </p>
+        <div className="mb-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-sm p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
+                  {project.project_name}
+                </h1>
+                <div className="flex items-center gap-2 bg-white/20 rounded-lg px-4 py-2 backdrop-blur-sm w-fit">
+                  <span className="text-2xl">📅</span>
+                  <p className="text-white text-lg font-medium">
+                    {project.start_date} - {project.end_date}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => router.push('/projects')}
+                className="w-full sm:w-auto px-6 py-3 bg-white text-indigo-600 rounded-xl hover:bg-indigo-50 transition-all font-semibold shadow-md hover:shadow-lg transform hover:scale-105"
+              >
+                ← 프로젝트 목록
+              </button>
+            </div>
           </div>
-          <button
-            onClick={() => router.push('/projects')}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all font-semibold"
-          >
-            ← 프로젝트 목록
-          </button>
         </div>
 
         {/* Stats Overview */}

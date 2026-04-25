@@ -28,7 +28,7 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
   const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
   const [editValue, setEditValue] = useState('');
   const [editCurrency, setEditCurrency] = useState('KRW');
-  const [sortBy, setSortBy] = useState<'date' | 'category' | 'city'>('date');
+  const [sortBy, setSortBy] = useState<'time' | 'category' | 'city'>('time');
 
   // Cost edit modal state
   const [costModalOpen, setCostModalOpen] = useState(false);
@@ -45,8 +45,15 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
 
   // Sort schedules
   filteredSchedules.sort((a, b) => {
-    if (sortBy === 'date') {
-      return a.date.localeCompare(b.date);
+    if (sortBy === 'time') {
+      // Sort by date first, then by time
+      const dateCompare = a.date.localeCompare(b.date);
+      if (dateCompare !== 0) return dateCompare;
+
+      // If same date, sort by time (earlier times first)
+      const timeA = a.time || '00:00';
+      const timeB = b.time || '00:00';
+      return timeA.localeCompare(timeB);
     } else if (sortBy === 'category') {
       return a.category.localeCompare(b.category);
     } else {
@@ -503,7 +510,7 @@ export default function TableView({ schedules, cities, onUpdate }: TableViewProp
               onChange={(e) => setSortBy(e.target.value as any)}
               className="px-3 py-1 border rounded-md text-sm"
             >
-              <option value="date">날짜순</option>
+              <option value="time">시간순</option>
               <option value="category">카테고리순</option>
               <option value="city">도시순</option>
             </select>
