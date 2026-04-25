@@ -37,6 +37,7 @@ export default function DashboardContent() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'card' | 'table' | 'map'>('card');
   const [reservationFilter, setReservationFilter] = useState<ReservationFilter>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'category' | 'city'>('date');
 
   const cardViewRef = useRef<HTMLDivElement>(null);
 
@@ -205,13 +206,27 @@ export default function DashboardContent() {
     setTimeout(() => scrollToCardView(), 100);
   }
 
-  // Filter schedules based on reservation status
+  // Filter and sort schedules
   function getFilteredSchedules(schedules: ScheduleItem[]): ScheduleItem[] {
-    if (reservationFilter === 'all') return schedules;
-    if (reservationFilter === 'required') return schedules.filter(s => s.reservation.status === '예정');
-    if (reservationFilter === 'completed') return schedules.filter(s => s.reservation.status === '완료');
-    if (reservationFilter === 'unnecessary') return schedules.filter(s => s.reservation.status === '불필요');
-    return schedules;
+    // Filter by reservation status
+    let filtered = schedules;
+    if (reservationFilter === 'required') filtered = schedules.filter(s => s.reservation.status === '예정');
+    else if (reservationFilter === 'completed') filtered = schedules.filter(s => s.reservation.status === '완료');
+    else if (reservationFilter === 'unnecessary') filtered = schedules.filter(s => s.reservation.status === '불필요');
+
+    // Sort
+    const sorted = [...filtered];
+    sorted.sort((a, b) => {
+      if (sortBy === 'date') {
+        return a.date.localeCompare(b.date);
+      } else if (sortBy === 'category') {
+        return a.category.localeCompare(b.category);
+      } else {
+        return (a.city || '').localeCompare(b.city || '');
+      }
+    });
+
+    return sorted;
   }
 
   if (loading) {
@@ -318,48 +333,89 @@ export default function DashboardContent() {
               cities={project.cities}
             />
 
-            {/* Filter Buttons */}
-            <div className="mb-6 flex flex-wrap gap-2 bg-white rounded-lg shadow p-4">
-              <button
-                onClick={() => setReservationFilter('all')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                  reservationFilter === 'all'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                전체
-              </button>
-              <button
-                onClick={() => setReservationFilter('required')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                  reservationFilter === 'required'
-                    ? 'bg-gray-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                예정
-              </button>
-              <button
-                onClick={() => setReservationFilter('completed')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                  reservationFilter === 'completed'
-                    ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                완료
-              </button>
-              <button
-                onClick={() => setReservationFilter('unnecessary')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                  reservationFilter === 'unnecessary'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                불필요
-              </button>
+            {/* Filter and Sort Buttons */}
+            <div className="mb-6 bg-white rounded-lg shadow p-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Filter Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-sm font-semibold text-gray-700 self-center mr-2">필터:</span>
+                  <button
+                    onClick={() => setReservationFilter('all')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      reservationFilter === 'all'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    전체
+                  </button>
+                  <button
+                    onClick={() => setReservationFilter('required')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      reservationFilter === 'required'
+                        ? 'bg-gray-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    예정
+                  </button>
+                  <button
+                    onClick={() => setReservationFilter('completed')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      reservationFilter === 'completed'
+                        ? 'bg-green-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    완료
+                  </button>
+                  <button
+                    onClick={() => setReservationFilter('unnecessary')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      reservationFilter === 'unnecessary'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    불필요
+                  </button>
+                </div>
+
+                {/* Sort Buttons */}
+                <div className="flex flex-wrap gap-2 sm:ml-auto">
+                  <span className="text-sm font-semibold text-gray-700 self-center mr-2">정렬:</span>
+                  <button
+                    onClick={() => setSortBy('date')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      sortBy === 'date'
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    날짜순
+                  </button>
+                  <button
+                    onClick={() => setSortBy('category')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      sortBy === 'category'
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    카테고리순
+                  </button>
+                  <button
+                    onClick={() => setSortBy('city')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      sortBy === 'city'
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    도시순
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

@@ -48,6 +48,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
       id: `spot-${Date.now()}`,
       name: '',
       duration: '',
+      details: '',
       order: (formData.tour_spots?.length || 0) + 1,
     };
     setFormData({
@@ -696,20 +697,29 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
                           삭제
                         </button>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          value={spot.name}
-                          onChange={(e) => updateTourSpot(spot.id, 'name', e.target.value)}
-                          placeholder="장소명"
-                          className="p-2 border-2 border-yellow-200 rounded-lg"
-                        />
-                        <input
-                          type="text"
-                          value={spot.duration}
-                          onChange={(e) => updateTourSpot(spot.id, 'duration', e.target.value)}
-                          placeholder="소요 시간 (예: 1시간 30분)"
-                          className="p-2 border-2 border-yellow-200 rounded-lg"
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <input
+                            type="text"
+                            value={spot.name}
+                            onChange={(e) => updateTourSpot(spot.id, 'name', e.target.value)}
+                            placeholder="장소명"
+                            className="p-2 border-2 border-yellow-200 rounded-lg"
+                          />
+                          <input
+                            type="text"
+                            value={spot.duration}
+                            onChange={(e) => updateTourSpot(spot.id, 'duration', e.target.value)}
+                            placeholder="소요 시간 (예: 1시간 30분)"
+                            className="p-2 border-2 border-yellow-200 rounded-lg"
+                          />
+                        </div>
+                        <textarea
+                          value={spot.details || ''}
+                          onChange={(e) => updateTourSpot(spot.id, 'details', e.target.value)}
+                          placeholder="상세 정보 (예: 입장료, 특이사항 등)"
+                          rows={2}
+                          className="w-full p-2 border-2 border-yellow-200 rounded-lg"
                         />
                       </div>
                     </div>

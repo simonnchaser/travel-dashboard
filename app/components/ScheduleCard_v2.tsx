@@ -444,13 +444,16 @@ export default function ScheduleCard({
                         <div className="space-y-2">
                           {schedule.tour_spots.sort((a, b) => a.order - b.order).map((spot, idx) => (
                             <div key={spot.id} className="bg-white p-3 rounded border border-yellow-200">
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-bold text-yellow-700">#{idx + 1}</span>
                                   <span className="font-medium text-gray-800">{spot.name}</span>
                                 </div>
                                 <span className="text-sm text-gray-600">⏱️ {spot.duration}</span>
                               </div>
+                              {spot.details && (
+                                <p className="text-sm text-gray-600 pl-7">{spot.details}</p>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -970,6 +973,7 @@ export default function ScheduleCard({
                               id: `spot-${Date.now()}`,
                               name: '',
                               duration: '',
+                              details: '',
                               order: (editedSchedule.tour_spots?.length || 0) + 1,
                             };
                             setEditedSchedule({
@@ -1006,6 +1010,17 @@ export default function ScheduleCard({
                                   setEditedSchedule({ ...editedSchedule, tour_spots: updatedSpots });
                                 }}
                                 placeholder="소요 시간 (예: 1시간 30분)"
+                                className="w-full p-2 border border-yellow-300 rounded-md text-sm"
+                              />
+                              <textarea
+                                value={spot.details || ''}
+                                onChange={(e) => {
+                                  const updatedSpots = [...(editedSchedule.tour_spots || [])];
+                                  updatedSpots[idx] = { ...spot, details: e.target.value };
+                                  setEditedSchedule({ ...editedSchedule, tour_spots: updatedSpots });
+                                }}
+                                placeholder="상세 정보 (예: 입장료, 특이사항 등)"
+                                rows={2}
                                 className="w-full p-2 border border-yellow-300 rounded-md text-sm"
                               />
                             </div>

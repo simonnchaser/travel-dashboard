@@ -18,6 +18,7 @@ export interface TourSpot {
   id: string;
   name: string;
   duration: string; // 소요 시간 (예: "1시간 30분")
+  details: string; // 상세 정보
   order: number; // 방문 순서
 }
 
