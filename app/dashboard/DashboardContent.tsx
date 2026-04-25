@@ -286,46 +286,51 @@ export default function DashboardContent() {
         <CostKpiDashboard schedules={Object.values(scheduleData).flat()} />
 
         {/* View Mode Toggle & Add Button */}
-        <div className="mb-6 flex justify-between items-center">
-          <div className="flex gap-2 bg-white rounded-lg shadow p-1">
+        <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
+          {/* Add Button - First on mobile, second on desktop */}
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all transform hover:scale-105"
+          >
+            ➕ 새 일정 추가
+          </button>
+
+          {/* View Toggle - Second on mobile, first on desktop */}
+          <div className="flex gap-2 bg-white rounded-lg shadow p-1 order-2 sm:order-1">
             <button
               onClick={() => setViewMode('card')}
-              className={`px-4 py-2 rounded-md font-semibold transition-all ${
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
                 viewMode === 'card'
                   ? 'bg-indigo-600 text-white shadow'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
-              📋 카드 뷰
+              <span className="text-xl">📋</span>
+              <span className="text-xs">카드 뷰</span>
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-4 py-2 rounded-md font-semibold transition-all ${
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
                 viewMode === 'table'
                   ? 'bg-indigo-600 text-white shadow'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
-              📊 테이블 뷰
+              <span className="text-xl">📊</span>
+              <span className="text-xs">테이블 뷰</span>
             </button>
             <button
               onClick={() => setViewMode('map')}
-              className={`px-4 py-2 rounded-md font-semibold transition-all ${
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
                 viewMode === 'map'
                   ? 'bg-indigo-600 text-white shadow'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
-              🗺️ 맵 뷰
+              <span className="text-xl">🗺️</span>
+              <span className="text-xs">맵 뷰</span>
             </button>
           </div>
-
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all transform hover:scale-105"
-          >
-            ➕ 새 일정 추가
-          </button>
         </div>
 
         {/* City Tabs - Only show in card view */}
