@@ -17,6 +17,7 @@ interface CostByCategory {
   dining: number;
   activity: number;
   transport: number;
+  tour: number;
 }
 
 interface CostByCity {
@@ -28,6 +29,7 @@ const categoryLabels = {
   dining: '식사',
   activity: '액티비티',
   transport: '교통',
+  tour: '투어',
 };
 
 export default function CostKpiDashboard({ schedules }: CostKpiDashboardProps) {
@@ -38,6 +40,7 @@ export default function CostKpiDashboard({ schedules }: CostKpiDashboardProps) {
     dining: 0,
     activity: 0,
     transport: 0,
+    tour: 0,
   });
   const [costByCity, setCostByCity] = useState<CostByCity>({});
   const [loading, setLoading] = useState(true);
@@ -53,6 +56,7 @@ export default function CostKpiDashboard({ schedules }: CostKpiDashboardProps) {
         dining: 0,
         activity: 0,
         transport: 0,
+        tour: 0,
       };
       const byCity: CostByCity = {};
 
