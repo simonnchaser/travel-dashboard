@@ -198,7 +198,7 @@ export default function DashboardContent() {
   }
 
   // Handle reservation filter click
-  function handleReservationFilterClick(cityId: string, filter: 'required' | 'completed') {
+  function handleReservationFilterClick(cityId: string, filter: 'required' | 'completed' | 'unnecessary') {
     setViewMode('card');
     setSelectedCityId(cityId);
     setReservationFilter(filter);
@@ -208,8 +208,8 @@ export default function DashboardContent() {
   // Filter schedules based on reservation status
   function getFilteredSchedules(schedules: ScheduleItem[]): ScheduleItem[] {
     if (reservationFilter === 'all') return schedules;
-    if (reservationFilter === 'required') return schedules.filter(s => s.reservation.required && !s.reservation.completed);
-    if (reservationFilter === 'completed') return schedules.filter(s => s.reservation.completed);
+    if (reservationFilter === 'required') return schedules.filter(s => s.reservation.status === '예정');
+    if (reservationFilter === 'completed') return schedules.filter(s => s.reservation.status === '완료');
     if (reservationFilter === 'unnecessary') return schedules.filter(s => s.reservation.status === '불필요');
     return schedules;
   }

@@ -205,23 +205,47 @@ export default function MapView({ schedules }: MapViewProps) {
         // Create marker color based on city
         const color = getCityColor(location.city_id || 'default');
 
-        // Create custom marker element
+        // Create custom marker element with label
         const el = document.createElement('div');
         el.className = 'custom-marker';
-        el.style.backgroundColor = color;
-        el.style.width = '30px';
-        el.style.height = '30px';
-        el.style.borderRadius = '50%';
-        el.style.border = '3px solid white';
-        el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-        el.style.cursor = 'pointer';
         el.style.display = 'flex';
+        el.style.flexDirection = 'column';
         el.style.alignItems = 'center';
-        el.style.justifyContent = 'center';
-        el.style.fontSize = '14px';
-        el.textContent = (index + 1).toString();
-        el.style.color = 'white';
-        el.style.fontWeight = 'bold';
+        el.style.cursor = 'pointer';
+
+        // Create the circle
+        const circle = document.createElement('div');
+        circle.style.backgroundColor = color;
+        circle.style.width = '30px';
+        circle.style.height = '30px';
+        circle.style.borderRadius = '50%';
+        circle.style.border = '3px solid white';
+        circle.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+        circle.style.display = 'flex';
+        circle.style.alignItems = 'center';
+        circle.style.justifyContent = 'center';
+        circle.style.fontSize = '14px';
+        circle.textContent = (index + 1).toString();
+        circle.style.color = 'white';
+        circle.style.fontWeight = 'bold';
+
+        // Create the label (title)
+        const label = document.createElement('div');
+        label.style.marginTop = '4px';
+        label.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        label.style.padding = '4px 8px';
+        label.style.borderRadius = '4px';
+        label.style.fontSize = '12px';
+        label.style.fontWeight = '600';
+        label.style.color = '#1f2937';
+        label.style.whiteSpace = 'nowrap';
+        label.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+        label.style.border = '1px solid rgba(0,0,0,0.1)';
+        label.textContent = title;
+
+        // Append circle and label to marker element
+        el.appendChild(circle);
+        el.appendChild(label);
 
         // Create popup content
         const popupContent = `
