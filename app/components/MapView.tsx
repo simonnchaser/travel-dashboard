@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScheduleItem } from '../types/schedule';
 import { extractCoordinatesFromUrlWithGeocoding, getCenterPoint, getCityColor } from '../../lib/mapUtils';
+import { getDirections, DirectionsResult, getTravelModeIcon, getVehicleTypeKorean } from '../../lib/directionsService';
 
 // Extend Window interface to include google
 declare global {
@@ -22,12 +23,170 @@ const categoryLabels = {
   transport: '교통',
 };
 
+interface LocationWithIndex extends ScheduleItem {
+  coords: { lat: number; lng: number };
+  originalIndex: number;
+}
+
 export default function MapView({ schedules }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const markersRef = useRef<any[]>([]);
   const polylinesRef = useRef<any[]>([]);
+  const locationsRef = useRef<LocationWithIndex[]>([]);
+
+  // Selection state for route calculation
+  const [selectedMarkers, setSelectedMarkers] = useState<number[]>([]);
+  const selectedMarkersRef = useRef<number[]>([]); // Keep ref in sync with state
+  const [routeInfo, setRouteInfo] = useState<DirectionsResult | null>(null);
+  const [travelMode, setTravelMode] = useState<'TRANSIT' | 'WALKING' | 'DRIVING'>('TRANSIT');
+  const [loadingRoute, setLoadingRoute] = useState(false);
+  const directionsRenderer = useRef<any>(null);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    selectedMarkersRef.current = selectedMarkers;
+  }, [selectedMarkers]);
+
+  // Handle marker selection
+  const handleMarkerClick = async (index: number) => {
+    console.log('🔵 Marker clicked:', index);
+    console.log('🔵 Current selection:', selectedMarkersRef.current);
+
+    const newSelection = [...selectedMarkersRef.current];
+
+    if (newSelection.includes(index)) {
+      // Deselect if already selected
+      const idx = newSelection.indexOf(index);
+      newSelection.splice(idx, 1);
+      console.log('🔴 Deselected, new selection:', newSelection);
+      setSelectedMarkers(newSelection);
+      updateMarkerStyles(newSelection);
+
+      // Clear route if deselecting
+      if (newSelection.length < 2) {
+        clearRoute();
+      }
+    } else {
+      // Select marker
+      if (newSelection.length >= 2) {
+        // Replace oldest selection
+        newSelection.shift();
+      }
+      newSelection.push(index);
+      console.log('🟢 Selected, new selection:', newSelection);
+      setSelectedMarkers(newSelection);
+      updateMarkerStyles(newSelection);
+
+      // Calculate route if two markers selected
+      if (newSelection.length === 2) {
+        console.log('🗺️ Calculating route between', newSelection[0], 'and', newSelection[1]);
+        await calculateRoute(newSelection[0], newSelection[1]);
+      } else {
+        clearRoute();
+      }
+    }
+  };
+
+  // Update marker visual styles based on selection
+  const updateMarkerStyles = (selection: number[]) => {
+    markersRef.current.forEach((marker, idx) => {
+      const location = locationsRef.current[idx];
+      if (!location) return;
+
+      const color = getCityColor(location.city_id || 'default');
+      const isSelected = selection.includes(idx);
+      const isFirst = selection[0] === idx;
+      const isSecond = selection[1] === idx;
+
+      marker.setIcon({
+        path: window.google.maps.SymbolPath.CIRCLE,
+        fillColor: isFirst ? '#22c55e' : isSecond ? '#ef4444' : color,
+        fillOpacity: 1,
+        strokeColor: isSelected ? '#fbbf24' : '#ffffff',
+        strokeWeight: isSelected ? 5 : 3,
+        scale: isSelected ? 20 : 15
+      });
+    });
+  };
+
+  // Calculate route between two points
+  const calculateRoute = async (fromIndex: number, toIndex: number) => {
+    setLoadingRoute(true);
+    setRouteInfo(null);
+
+    try {
+      const fromLocation = locationsRef.current[fromIndex];
+      const toLocation = locationsRef.current[toIndex];
+
+      if (!fromLocation || !toLocation) return;
+
+      // Use coordinates for more accurate routing
+      const origin = `${fromLocation.coords.lat},${fromLocation.coords.lng}`;
+      const destination = `${toLocation.coords.lat},${toLocation.coords.lng}`;
+
+      const directions = await getDirections(origin, destination, travelMode);
+
+      if (directions) {
+        setRouteInfo(directions);
+        displayRouteOnMap(fromLocation.coords, toLocation.coords);
+      }
+    } catch (error) {
+      console.error('Failed to calculate route:', error);
+    } finally {
+      setLoadingRoute(false);
+    }
+  };
+
+  // Display route polyline on map
+  const displayRouteOnMap = (from: { lat: number; lng: number }, to: { lat: number; lng: number }) => {
+    // Clear previous route
+    if (directionsRenderer.current) {
+      directionsRenderer.current.setMap(null);
+    }
+
+    // Create directions renderer
+    directionsRenderer.current = new window.google.maps.DirectionsRenderer({
+      map: map.current,
+      suppressMarkers: true, // We already have our custom markers
+      polylineOptions: {
+        strokeColor: '#4f46e5',
+        strokeWeight: 5,
+        strokeOpacity: 0.8
+      }
+    });
+
+    // Request directions
+    const directionsService = new window.google.maps.DirectionsService();
+    directionsService.route(
+      {
+        origin: { lat: from.lat, lng: from.lng },
+        destination: { lat: to.lat, lng: to.lng },
+        travelMode: window.google.maps.TravelMode[travelMode]
+      },
+      (result: any, status: any) => {
+        if (status === 'OK') {
+          directionsRenderer.current.setDirections(result);
+        }
+      }
+    );
+  };
+
+  // Clear route display
+  const clearRoute = () => {
+    if (directionsRenderer.current) {
+      directionsRenderer.current.setMap(null);
+    }
+    setRouteInfo(null);
+  };
+
+  // Reset selection
+  const resetSelection = () => {
+    setSelectedMarkers([]);
+    updateMarkerStyles([]);
+    clearRoute();
+  };
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -48,20 +207,21 @@ export default function MapView({ schedules }: MapViewProps) {
 
       // Extract coordinates from schedules with geocoding support
       const locationsWithCoords = await Promise.all(
-        sortedSchedules.map(async (s) => {
+        sortedSchedules.map(async (s, originalIndex) => {
           if (s.category === 'transport') {
             if (!s.departure_google_maps_url) return null;
             const coords = await extractCoordinatesFromUrlWithGeocoding(s.departure_google_maps_url);
-            return coords ? { ...s, coords } : null;
+            return coords ? { ...s, coords, originalIndex } : null;
           } else {
             if (!s.google_maps_url) return null;
             const coords = await extractCoordinatesFromUrlWithGeocoding(s.google_maps_url);
-            return coords ? { ...s, coords } : null;
+            return coords ? { ...s, coords, originalIndex } : null;
           }
         })
       );
 
-      const locations = locationsWithCoords.filter(Boolean) as (ScheduleItem & { coords: { lat: number; lng: number } })[];
+      const locations = locationsWithCoords.filter(Boolean) as LocationWithIndex[];
+      locationsRef.current = locations;
 
       console.log('=== MapView Debug ===');
       console.log('Total schedules:', schedules.length);
@@ -233,7 +393,7 @@ export default function MapView({ schedules }: MapViewProps) {
           // Create marker color based on city
           const color = getCityColor(location.city_id || 'default');
 
-          // Create custom marker with label using AdvancedMarkerElement alternative
+          // Create custom marker with label
           const marker = new window.google.maps.Marker({
             position: { lat: coords.lat, lng: coords.lng },
             map: map.current,
@@ -284,6 +444,9 @@ export default function MapView({ schedules }: MapViewProps) {
                   구글맵에서 보기 →
                 </a>
               ` : ''}
+              <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
+                💡 클릭해서 두 지점 선택 시 경로 표시
+              </div>
             </div>
           `;
 
@@ -291,7 +454,11 @@ export default function MapView({ schedules }: MapViewProps) {
             content: popupContent
           });
 
-          marker.addListener('click', () => {
+          // Update click handler to support selection
+          marker.addListener('click', async () => {
+            // Handle selection first
+            await handleMarkerClick(index);
+            // Then show info window
             infoWindow.open(map.current, marker);
           });
 
@@ -324,26 +491,208 @@ export default function MapView({ schedules }: MapViewProps) {
     };
   }, [schedules]);
 
+  // Update route when travel mode changes
+  useEffect(() => {
+    if (selectedMarkers.length === 2) {
+      calculateRoute(selectedMarkers[0], selectedMarkers[1]);
+    }
+  }, [travelMode]);
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <span>🗺️</span>
-          <span>일정 지도</span>
-        </h2>
-        <p className="text-sm text-gray-600 mt-1">
-          {schedules.filter(s => s.category === 'transport' ? s.departure_google_maps_url : s.google_maps_url).length}개 위치 표시 중
-        </p>
-      </div>
-      <div
-        ref={mapContainer}
-        className="w-full h-[600px]"
-      />
-      {!mapLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <p className="text-gray-600">지도 로딩 중...</p>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <span>🗺️</span>
+              <span>일정 지도</span>
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {schedules.filter(s => s.category === 'transport' ? s.departure_google_maps_url : s.google_maps_url).length}개 위치 표시 중
+            </p>
+          </div>
+
+          {/* Travel Mode Selector */}
+          {selectedMarkers.length > 0 && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setTravelMode('TRANSIT')}
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  travelMode === 'TRANSIT'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🚌 대중교통
+              </button>
+              <button
+                onClick={() => setTravelMode('WALKING')}
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  travelMode === 'WALKING'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🚶 도보
+              </button>
+              <button
+                onClick={() => setTravelMode('DRIVING')}
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  travelMode === 'DRIVING'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🚗 자동차
+              </button>
+              <button
+                onClick={resetSelection}
+                className="px-3 py-2 bg-red-100 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-200 transition-all"
+              >
+                ✕ 초기화
+              </button>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Selection Instructions */}
+        {selectedMarkers.length === 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+            💡 <strong>지도 사용법:</strong> 마커를 클릭하여 두 지점을 선택하면 경로 정보가 표시됩니다.
+          </div>
+        )}
+
+        {/* Selection Status */}
+        {selectedMarkers.length > 0 && (
+          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                <span className="font-semibold text-indigo-900">
+                  선택됨: {selectedMarkers.length}/2
+                </span>
+                {selectedMarkers.length === 1 && (
+                  <span className="text-indigo-700 ml-2">
+                    → 다른 지점을 선택하세요
+                  </span>
+                )}
+                {selectedMarkers.length === 2 && locationsRef.current[selectedMarkers[0]] && locationsRef.current[selectedMarkers[1]] && (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex items-center gap-2 text-indigo-800">
+                      <span className="text-green-600">🟢</span>
+                      <span>{locationsRef.current[selectedMarkers[0]].title}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-indigo-800">
+                      <span className="text-red-600">🔴</span>
+                      <span>{locationsRef.current[selectedMarkers[1]].title}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {loadingRoute && (
+                <div className="flex items-center gap-2 text-indigo-600">
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-600 border-t-transparent"></div>
+                  <span className="text-sm font-semibold">경로 계산 중...</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Map and Route Info Container */}
+      <div className="flex flex-col lg:flex-row">
+        {/* Map */}
+        <div className={`${routeInfo ? 'lg:w-2/3' : 'w-full'} relative`}>
+          <div
+            ref={mapContainer}
+            className="w-full h-[600px]"
+          />
+          {!mapLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <p className="text-gray-600">지도 로딩 중...</p>
+            </div>
+          )}
+        </div>
+
+        {/* Route Info Panel */}
+        {routeInfo && selectedMarkers.length === 2 && (
+          <div className="lg:w-1/3 p-4 bg-gray-50 border-l border-gray-200 overflow-y-auto max-h-[600px]">
+            <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+              <span>🗺️</span>
+              <span>경로 정보</span>
+            </h3>
+
+            {/* Summary */}
+            <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-gray-600">총 거리</p>
+                  <p className="text-lg font-bold text-indigo-600">{routeInfo.distance}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">예상 시간</p>
+                  <p className="text-lg font-bold text-purple-600">{routeInfo.duration}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm text-gray-700 mb-2">
+                상세 경로 ({routeInfo.steps.length}단계)
+              </h4>
+              {routeInfo.steps.map((step, index) => (
+                <div key={index} className="bg-white rounded-lg p-3 shadow-sm text-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      {step.transitDetails ? (
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span>{getTravelModeIcon(step.transitDetails.vehicle)}</span>
+                            <span className="font-semibold text-gray-800">
+                              {getVehicleTypeKorean(step.transitDetails.vehicle)}
+                            </span>
+                            <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs font-semibold">
+                              {step.transitDetails.line}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-600 space-y-0.5 ml-6">
+                            <p>🚏 승차: {step.transitDetails.departure}</p>
+                            <p>🚏 하차: {step.transitDetails.arrival}</p>
+                            <p>{step.transitDetails.numStops}개 정거장 • {step.duration}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="font-semibold text-gray-800">{step.instruction}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {step.distance} • {step.duration}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Google Maps Link */}
+            {locationsRef.current[selectedMarkers[0]] && locationsRef.current[selectedMarkers[1]] && (
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&origin=${locationsRef.current[selectedMarkers[0]].coords.lat},${locationsRef.current[selectedMarkers[0]].coords.lng}&destination=${locationsRef.current[selectedMarkers[1]].coords.lat},${locationsRef.current[selectedMarkers[1]].coords.lng}&travelmode=${travelMode.toLowerCase()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg text-center font-semibold hover:bg-indigo-700 transition-colors text-sm"
+              >
+                Google Maps에서 보기 →
+              </a>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
