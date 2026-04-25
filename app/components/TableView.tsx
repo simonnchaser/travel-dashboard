@@ -19,6 +19,7 @@ const categoryLabels: Record<ScheduleCategory, string> = {
   dining: '🍽️ 식사',
   activity: '🎭 관광',
   transport: '🚌 교통',
+  tour: '🎯 투어',
 };
 
 export default function TableView({ schedules, cities, onUpdate }: TableViewProps) {
