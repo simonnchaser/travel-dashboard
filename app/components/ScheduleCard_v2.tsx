@@ -925,6 +925,110 @@ export default function ScheduleCard({
                   </div>
                 )}
 
+                {editedSchedule.category === 'tour' && (
+                  <div className="bg-yellow-50 p-4 rounded-lg space-y-3 border-2 border-yellow-200">
+                    <h3 className="font-semibold text-yellow-900">🎯 투어 정보</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-semibold text-yellow-800 mb-1">집합 장소</label>
+                        <input
+                          type="text"
+                          value={editedSchedule.meeting_location || ''}
+                          onChange={(e) => setEditedSchedule({ ...editedSchedule, meeting_location: e.target.value })}
+                          placeholder="예: 프라하 구시가 광장"
+                          className="w-full p-2 border-2 border-yellow-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-yellow-800 mb-1">집합 시간</label>
+                        <input
+                          type="time"
+                          value={editedSchedule.meeting_time || ''}
+                          onChange={(e) => setEditedSchedule({ ...editedSchedule, meeting_time: e.target.value })}
+                          className="w-full p-2 border-2 border-yellow-300 rounded-md"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-yellow-800 mb-1">가이드 정보</label>
+                      <input
+                        type="text"
+                        value={editedSchedule.tour_guide || ''}
+                        onChange={(e) => setEditedSchedule({ ...editedSchedule, tour_guide: e.target.value })}
+                        placeholder="예: 김철수 가이드 (010-1234-5678)"
+                        className="w-full p-2 border-2 border-yellow-300 rounded-md"
+                      />
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-semibold text-yellow-800">투어 스팟</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newSpot = {
+                              id: `spot-${Date.now()}`,
+                              name: '',
+                              duration: '',
+                              order: (editedSchedule.tour_spots?.length || 0) + 1,
+                            };
+                            setEditedSchedule({
+                              ...editedSchedule,
+                              tour_spots: [...(editedSchedule.tour_spots || []), newSpot],
+                            });
+                          }}
+                          className="px-3 py-1 bg-yellow-600 text-white rounded-md text-sm font-semibold hover:bg-yellow-700 transition-all"
+                        >
+                          + 스팟 추가
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {(editedSchedule.tour_spots || []).map((spot, idx) => (
+                          <div key={spot.id} className="flex gap-2 items-start bg-white p-3 rounded-md border border-yellow-200">
+                            <div className="flex-1 space-y-2">
+                              <input
+                                type="text"
+                                value={spot.name}
+                                onChange={(e) => {
+                                  const updatedSpots = [...(editedSchedule.tour_spots || [])];
+                                  updatedSpots[idx] = { ...spot, name: e.target.value };
+                                  setEditedSchedule({ ...editedSchedule, tour_spots: updatedSpots });
+                                }}
+                                placeholder="스팟 이름 (예: 프라하 성)"
+                                className="w-full p-2 border border-yellow-300 rounded-md text-sm"
+                              />
+                              <input
+                                type="text"
+                                value={spot.duration}
+                                onChange={(e) => {
+                                  const updatedSpots = [...(editedSchedule.tour_spots || [])];
+                                  updatedSpots[idx] = { ...spot, duration: e.target.value };
+                                  setEditedSchedule({ ...editedSchedule, tour_spots: updatedSpots });
+                                }}
+                                placeholder="소요 시간 (예: 1시간 30분)"
+                                className="w-full p-2 border border-yellow-300 rounded-md text-sm"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedSpots = (editedSchedule.tour_spots || []).filter((_, i) => i !== idx);
+                                setEditedSchedule({ ...editedSchedule, tour_spots: updatedSpots });
+                              }}
+                              className="px-2 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-all mt-1"
+                            >
+                              삭제
+                            </button>
+                          </div>
+                        ))}
+                        {(!editedSchedule.tour_spots || editedSchedule.tour_spots.length === 0) && (
+                          <p className="text-sm text-yellow-700 text-center py-2">+ 스팟 추가 버튼을 눌러 투어 스팟을 추가하세요</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Notes */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">메모</label>
