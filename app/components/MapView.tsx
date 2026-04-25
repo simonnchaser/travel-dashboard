@@ -92,7 +92,11 @@ export default function MapView({ schedules }: MapViewProps) {
       transportRoutes.forEach((route, index) => {
         const lineId = `route-${index}`;
 
-        // Remove existing source and layer if they exist
+        // Remove existing layers and source if they exist
+        // IMPORTANT: Remove all layers using the source BEFORE removing the source
+        if (map.current!.getLayer(`${lineId}-arrow`)) {
+          map.current!.removeLayer(`${lineId}-arrow`);
+        }
         if (map.current!.getLayer(lineId)) {
           map.current!.removeLayer(lineId);
         }
