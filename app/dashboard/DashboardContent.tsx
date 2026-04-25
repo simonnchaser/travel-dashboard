@@ -257,10 +257,10 @@ export default function DashboardContent() {
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2 flex items-center gap-3">
-              ✈️ {project.project_name}
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
+              {project.project_name}
             </h1>
             <p className="text-gray-600 text-lg">
               {project.start_date} - {project.end_date}
@@ -268,7 +268,7 @@ export default function DashboardContent() {
           </div>
           <button
             onClick={() => router.push('/projects')}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all font-semibold"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all font-semibold"
           >
             ← 프로젝트 목록
           </button>
