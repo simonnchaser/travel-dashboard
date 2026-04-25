@@ -149,7 +149,8 @@ export default function ScheduleCard({
         className="p-4 cursor-pointer hover:bg-gray-50"
         onClick={onToggleExpand}
       >
-        <div className="flex items-start justify-between gap-4">
+        {/* Desktop Layout */}
+        <div className="hidden md:flex items-start justify-between gap-4">
           {/* Left: Number and Title */}
           <div className="flex items-start gap-3">
             <span className="text-2xl font-bold text-indigo-600">#{index + 1}</span>
@@ -159,14 +160,11 @@ export default function ScheduleCard({
                 {schedule.date} ({schedule.day_of_week}) {schedule.time && `- ${schedule.time}`}
               </p>
               <p className="text-xs text-gray-400 mt-1">{categoryLabels[schedule.category]}</p>
-              {schedule.details && (
-                <p className="text-gray-600 mt-2">{schedule.details}</p>
-              )}
             </div>
           </div>
 
           {/* Right: Cost, Google Maps, Reservation Status */}
-          <div className="flex items-center gap-4 flex-shrink-0">
+          <div className="flex items-center gap-4 shrink-0">
             {/* Cost Display */}
             {schedule.cost && (
               <div className="flex items-center gap-1">
@@ -185,7 +183,7 @@ export default function ScheduleCard({
                 className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 hover:underline text-sm font-medium"
               >
                 <span>📍</span>
-                <span>구글맵 주소</span>
+                <span>구글맵</span>
               </a>
             )}
 
@@ -216,15 +214,86 @@ export default function ScheduleCard({
             </button>
           </div>
         </div>
+
+        {/* Mobile Layout */}
+        <div className="md:hidden space-y-3">
+          {/* Top Row: Number, Title, Expand Button */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2">
+              <span className="text-xl font-bold text-indigo-600">#{index + 1}</span>
+              <div>
+                <h3 className="text-lg font-bold text-gray-800">{schedule.title}</h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  {schedule.date} ({schedule.day_of_week}) {schedule.time && `${schedule.time}`}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">{categoryLabels[schedule.category]}</p>
+              </div>
+            </div>
+            <button className="text-gray-400 hover:text-gray-600 text-xl shrink-0">
+              {isExpanded ? '▲' : '▼'}
+            </button>
+          </div>
+
+          {/* Bottom Row: Cost, Google Maps, Reservation */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            {/* Cost */}
+            {schedule.cost && (
+              <div className="flex items-center gap-1 text-sm">
+                <span>💰</span>
+                <CostDisplay amount={schedule.cost} currency={schedule.currency} />
+              </div>
+            )}
+
+            {/* Google Maps Icon Only */}
+            {schedule.google_maps_url && (
+              <a
+                href={schedule.google_maps_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-2xl hover:scale-110 transition-transform"
+                title="구글맵에서 보기"
+              >
+                📍
+              </a>
+            )}
+
+            {/* Reservation Status - Compact */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                cycleReservationStatus();
+              }}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                schedule.reservation.status === '완료'
+                  ? 'bg-green-100 text-green-700'
+                  : schedule.reservation.status === '불필요'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-gray-100 text-gray-600'
+              }`}
+              title="예약 상태"
+            >
+              {schedule.reservation.status || '예정'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-gray-200 p-4 bg-gray-50 space-y-4">
+        <div className="border-t border-gray-200 p-4 md:p-6 bg-gray-50 space-y-4">
           {!isEditing ? (
             <>
-              {/* View Mode */}
+              {/* Detail View Mode */}
               <div className="space-y-4">
+                {/* Details Section */}
+                {schedule.details && (
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">📋 상세 정보</p>
+                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{schedule.details}</p>
+                  </div>
+                )}
+
                 {/* Common Fields */}
                 <div className="grid md:grid-cols-2 gap-4">
                   {schedule.cost && (
@@ -386,22 +455,24 @@ export default function ScheduleCard({
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="border-t pt-4 flex justify-between">
+              {/* Action Buttons - Detail View */}
+              <div className="border-t pt-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-colors font-semibold"
+                  className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold shadow-md hover:shadow-lg"
                 >
-                  ✏️ 일정 수정
+                  ✏️ 수정하기
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete();
+                    if (confirm('정말 이 일정을 삭제하시겠습니까?')) {
+                      onDelete();
+                    }
                   }}
-                  className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors font-semibold"
+                  className="px-4 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors font-semibold"
                 >
-                  🗑️ 일정 삭제
+                  🗑️ 삭제
                 </button>
               </div>
             </>
