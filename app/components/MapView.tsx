@@ -414,6 +414,64 @@ export default function MapView({ schedules }: MapViewProps) {
             title: title
           });
 
+          // Create custom overlay for title label above marker
+          class TitleOverlay extends window.google.maps.OverlayView {
+            position: any;
+            title: string;
+            div: HTMLDivElement | null = null;
+
+            constructor(position: any, title: string) {
+              super();
+              this.position = position;
+              this.title = title;
+            }
+
+            onAdd() {
+              const div = document.createElement('div');
+              div.style.position = 'absolute';
+              div.style.background = 'rgba(255, 255, 255, 0.95)';
+              div.style.padding = '4px 8px';
+              div.style.borderRadius = '4px';
+              div.style.fontSize = '12px';
+              div.style.fontWeight = '600';
+              div.style.color = '#1f2937';
+              div.style.whiteSpace = 'nowrap';
+              div.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+              div.style.border = '1px solid rgba(0,0,0,0.1)';
+              div.style.pointerEvents = 'none';
+              div.style.transform = 'translate(-50%, -100%)';
+              div.style.marginTop = '-8px'; // Space above marker
+              div.textContent = this.title;
+              this.div = div;
+
+              const panes = this.getPanes();
+              panes!.overlayLayer.appendChild(div);
+            }
+
+            draw() {
+              const overlayProjection = this.getProjection();
+              const position = overlayProjection.fromLatLngToDivPixel(this.position);
+
+              if (this.div && position) {
+                this.div.style.left = position.x + 'px';
+                this.div.style.top = position.y + 'px';
+              }
+            }
+
+            onRemove() {
+              if (this.div) {
+                this.div.parentNode?.removeChild(this.div);
+                this.div = null;
+              }
+            }
+          }
+
+          const titleOverlay = new TitleOverlay(
+            new window.google.maps.LatLng(coords.lat, coords.lng),
+            title.length > 20 ? title.substring(0, 20) + '...' : title
+          );
+          titleOverlay.setMap(map.current);
+
           // Create popup content
           const popupContent = `
             <div style="padding: 8px; max-width: 250px;">
