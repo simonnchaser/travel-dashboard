@@ -31,9 +31,19 @@ export default function MapView({ schedules }: MapViewProps) {
 
     // Async function to load map with geocoding
     async function loadMap() {
+      // Sort schedules by time (date first, then time)
+      const sortedSchedules = [...schedules].sort((a, b) => {
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+
+        const timeA = a.time || '00:00';
+        const timeB = b.time || '00:00';
+        return timeA.localeCompare(timeB);
+      });
+
       // Extract coordinates from schedules with geocoding support
       const locationsWithCoords = await Promise.all(
-        schedules.map(async (s) => {
+        sortedSchedules.map(async (s) => {
           if (s.category === 'transport') {
             if (!s.departure_google_maps_url) return null;
             const coords = await extractCoordinatesFromUrlWithGeocoding(s.departure_google_maps_url);
@@ -72,7 +82,7 @@ export default function MapView({ schedules }: MapViewProps) {
       setMapLoaded(true);
 
       // Process transport schedules with routes (with geocoding support)
-      const transportRoutesPromises = schedules
+      const transportRoutesPromises = sortedSchedules
         .filter(s => s.category === 'transport' && s.departure_google_maps_url && s.arrival_google_maps_url)
         .map(async (s) => {
           const departureCoords = await extractCoordinatesFromUrlWithGeocoding(s.departure_google_maps_url!);
