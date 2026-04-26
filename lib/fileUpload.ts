@@ -11,13 +11,13 @@ export interface FileUploadResult {
  * Upload a file to Supabase Storage
  * @param file File to upload
  * @param projectId Project ID for organizing files
- * @param type 'packing' or 'todo' to determine folder structure
+ * @param type 'packing', 'todo', or 'booking' to determine folder structure
  * @returns Upload result with file metadata
  */
 export async function uploadFile(
   file: File,
   projectId: string,
-  type: 'packing' | 'todo'
+  type: 'packing' | 'todo' | 'booking'
 ): Promise<FileUploadResult | null> {
   try {
     // Generate unique file name

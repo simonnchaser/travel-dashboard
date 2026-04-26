@@ -340,6 +340,15 @@ export default function DashboardContent() {
               <span>🎒</span>
               <span>준비물 체크</span>
             </button>
+
+            {/* Booking Management Link */}
+            <button
+              onClick={() => router.push(`/booking?project=${projectId}`)}
+              className="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 shadow-md transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <span>🎫</span>
+              <span>예약 관리</span>
+            </button>
           </div>
 
           {/* Add Button */}
