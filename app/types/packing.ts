@@ -15,6 +15,10 @@ export interface PackingItem {
   quantity: number;
   is_packed: boolean;
   notes?: string;
+  file_name?: string;
+  file_path?: string;
+  file_type?: string;
+  file_size?: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -27,6 +31,10 @@ export interface TodoItem {
   due_date?: string;
   priority?: 'high' | 'medium' | 'low';
   notes?: string;
+  file_name?: string;
+  file_path?: string;
+  file_type?: string;
+  file_size?: number;
   created_at?: string;
   updated_at?: string;
 }
