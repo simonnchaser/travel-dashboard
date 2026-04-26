@@ -294,50 +294,61 @@ export default function DashboardContent() {
 
         {/* View Mode Toggle & Add Button */}
         <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
-          {/* Add Button - First on mobile, second on desktop */}
+          <div className="flex flex-col sm:flex-row gap-4 order-2 sm:order-1">
+            {/* View Toggle */}
+            <div className="flex gap-2 bg-white rounded-lg shadow p-1">
+              <button
+                onClick={() => setViewMode('card')}
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
+                  viewMode === 'card'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-xl">📋</span>
+                <span className="text-xs">카드 뷰</span>
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
+                  viewMode === 'table'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-xl">📊</span>
+                <span className="text-xs">테이블 뷰</span>
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
+                  viewMode === 'map'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-xl">🗺️</span>
+                <span className="text-xs">맵 뷰</span>
+              </button>
+            </div>
+
+            {/* Packing List Link */}
+            <button
+              onClick={() => router.push(`/packing?project=${projectId}`)}
+              className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 shadow-md transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <span>🎒</span>
+              <span>준비물 체크</span>
+            </button>
+          </div>
+
+          {/* Add Button */}
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all transform hover:scale-105"
           >
             ➕ 새 일정 추가
           </button>
-
-          {/* View Toggle - Second on mobile, first on desktop */}
-          <div className="flex gap-2 bg-white rounded-lg shadow p-1 order-2 sm:order-1">
-            <button
-              onClick={() => setViewMode('card')}
-              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
-                viewMode === 'card'
-                  ? 'bg-indigo-600 text-white shadow'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <span className="text-xl">📋</span>
-              <span className="text-xs">카드 뷰</span>
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
-                viewMode === 'table'
-                  ? 'bg-indigo-600 text-white shadow'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <span className="text-xl">📊</span>
-              <span className="text-xs">테이블 뷰</span>
-            </button>
-            <button
-              onClick={() => setViewMode('map')}
-              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
-                viewMode === 'map'
-                  ? 'bg-indigo-600 text-white shadow'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <span className="text-xl">🗺️</span>
-              <span className="text-xs">맵 뷰</span>
-            </button>
-          </div>
         </div>
 
         {/* City Tabs - Only show in card view */}
