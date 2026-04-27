@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { ScheduleItem } from '../types/schedule';
 import { City } from '../types/tripSettings';
 import CityTabs from '../components/CityTabs';
@@ -206,6 +206,11 @@ export default function DashboardContent() {
     setReservationFilter(filter);
     setTimeout(() => scrollToCardView(), 100);
   }
+
+  // Memoize all schedules for MapView to ensure proper re-rendering
+  const allSchedules = useMemo(() => {
+    return Object.values(scheduleData).flat();
+  }, [scheduleData]);
 
   // Filter and sort schedules
   function getFilteredSchedules(schedules: ScheduleItem[]): ScheduleItem[] {
@@ -471,7 +476,7 @@ export default function DashboardContent() {
             onUpdate={() => loadData()}
           />
         ) : (
-          <MapView schedules={Object.values(scheduleData).flat()} />
+          <MapView schedules={allSchedules} />
         )}
 
         {/* Add Schedule Modal */}
