@@ -87,6 +87,18 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
 
     try {
       const selectedCity = cities.find(c => c.id === selectedCityId);
+
+      // For tour category, save tour-specific data in details field as JSON
+      let detailsToSave = formData.details;
+      if (category === 'tour') {
+        const tourData = {
+          userDetails: formData.details, // User's custom notes
+          tour_guide: formData.tour_guide,
+          tour_spots: formData.tour_spots || [],
+        };
+        detailsToSave = JSON.stringify(tourData);
+      }
+
       const baseData = {
         city: selectedCity?.name,
         city_id: selectedCityId,
@@ -94,7 +106,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
         date: formData.date,
         time: formData.time,
         title: formData.title,
-        details: formData.details,
+        details: detailsToSave,
         cost: formData.cost,
         currency: formData.currency,
         num_people: formData.num_people || 1,
@@ -134,12 +146,8 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
           departure_time: formData.departure_time,
           arrival_time: formData.arrival_time,
         };
-      } else if (category === 'tour') {
-        categoryData = {
-          tour_guide: formData.tour_guide,
-          tour_spots: formData.tour_spots || [],
-        };
       }
+      // Note: tour category no longer adds to categoryData
 
       const { error } = await supabase.from('schedules').insert({
         ...baseData,

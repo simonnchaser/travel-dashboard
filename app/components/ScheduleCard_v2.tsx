@@ -25,6 +25,25 @@ const categoryLabels: Record<ScheduleCategory, string> = {
 };
 
 
+// Helper function to parse tour data from details field
+const parseTourData = (schedule: ScheduleItem) => {
+  if (schedule.category !== 'tour' || !schedule.details) {
+    return { tour_guide: '', tour_spots: [], userDetails: '' };
+  }
+
+  try {
+    const parsed = JSON.parse(schedule.details);
+    return {
+      tour_guide: parsed.tour_guide || '',
+      tour_spots: parsed.tour_spots || [],
+      userDetails: parsed.userDetails || '',
+    };
+  } catch {
+    // If details is not JSON, treat it as plain text
+    return { tour_guide: '', tour_spots: [], userDetails: schedule.details };
+  }
+};
+
 export default function ScheduleCard({
   schedule,
   index,
@@ -36,6 +55,9 @@ export default function ScheduleCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editedSchedule, setEditedSchedule] = useState<ScheduleItem>(schedule);
   const [saving, setSaving] = useState(false);
+
+  // Parse tour data from schedule
+  const tourData = parseTourData(schedule);
 
   const cycleReservationStatus = async () => {
     // Cycle: 예정 → 완료 → 불필요 → 예정
@@ -79,12 +101,23 @@ export default function ScheduleCard({
 
     try {
       if (schedule.id) {
+        // For tour category, encode tour data in details field
+        let detailsToSave = editedSchedule.details;
+        if (editedSchedule.category === 'tour') {
+          const tourData = {
+            userDetails: editedSchedule.details,
+            tour_guide: editedSchedule.tour_guide,
+            tour_spots: editedSchedule.tour_spots || [],
+          };
+          detailsToSave = JSON.stringify(tourData);
+        }
+
         const updateData: any = {
           category: editedSchedule.category,
           date: editedSchedule.date,
           time: editedSchedule.time,
           title: editedSchedule.title,
-          details: editedSchedule.details,
+          details: detailsToSave,
           cost: editedSchedule.cost,
           currency: editedSchedule.currency || 'KRW',
           num_people: editedSchedule.num_people || 1,
@@ -118,6 +151,7 @@ export default function ScheduleCard({
           updateData.departure_time = editedSchedule.departure_time;
           updateData.arrival_time = editedSchedule.arrival_time;
         }
+        // Note: tour category data is saved in details field as JSON
 
         const { error } = await supabase
           .from('schedules')
@@ -431,17 +465,17 @@ export default function ScheduleCard({
                         <p className="text-gray-600">{schedule.meeting_time}</p>
                       </div>
                     )}
-                    {schedule.tour_guide && (
+                    {tourData.tour_guide && (
                       <div>
                         <p className="text-sm font-semibold text-gray-700">가이드</p>
-                        <p className="text-gray-600">{schedule.tour_guide}</p>
+                        <p className="text-gray-600">{tourData.tour_guide}</p>
                       </div>
                     )}
-                    {schedule.tour_spots && schedule.tour_spots.length > 0 && (
+                    {tourData.tour_spots && tourData.tour_spots.length > 0 && (
                       <div>
                         <p className="text-sm font-semibold text-gray-700 mb-2">투어 스팟</p>
                         <div className="space-y-2">
-                          {schedule.tour_spots.sort((a, b) => a.order - b.order).map((spot, idx) => (
+                          {tourData.tour_spots.sort((a, b) => a.order - b.order).map((spot, idx) => (
                             <div key={spot.id} className="bg-white p-3 rounded border border-yellow-200">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
@@ -503,7 +537,18 @@ export default function ScheduleCard({
               {/* Action Buttons - Detail View */}
               <div className="border-t pt-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    // Initialize editedSchedule with tour data if it's a tour category
+                    if (schedule.category === 'tour') {
+                      setEditedSchedule({
+                        ...schedule,
+                        tour_guide: tourData.tour_guide,
+                        tour_spots: tourData.tour_spots,
+                        details: tourData.userDetails,
+                      });
+                    }
+                    setIsEditing(true);
+                  }}
                   className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold shadow-md hover:shadow-lg"
                 >
                   ✏️ 수정하기
