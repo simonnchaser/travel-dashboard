@@ -2,7 +2,68 @@
 
 ## 🔴 High Priority
 
-### Database Schema Refactoring
+### 1. Unify Schedule Add/Edit Forms
+**문제점:**
+- `AddScheduleModal_v2.tsx` (새 일정 추가)와 `ScheduleCard_v2.tsx` (일정 수정)가 별도로 구현되어 있음
+- 중복 코드가 많고 유지보수 어려움
+- UI/UX 일관성 부족
+- 한쪽에서 기능 추가하면 다른 쪽도 수정해야 함
+
+**현재 상태:**
+- 새 일정 추가: `AddScheduleModal_v2.tsx` (모달 형태)
+- 일정 수정: `ScheduleCard_v2.tsx` 내부 편집 모드 (카드 확장 형태)
+
+**개선 방안 (예상 소요시간: 2-3시간):**
+
+#### Option 1: 공통 폼 컴포넌트 생성 (추천)
+```
+app/components/
+  ├── ScheduleFormModal.tsx        # 새로 생성: 통합 폼 모달
+  ├── ScheduleFormFields.tsx       # 새로 생성: 재사용 가능한 폼 필드들
+  ├── AddScheduleModal_v2.tsx      # 제거 또는 래퍼로 변경
+  └── ScheduleCard_v2.tsx          # 편집 모드 제거, 모달 열기로 변경
+```
+
+**작업 내용:**
+1. `ScheduleFormFields.tsx` 생성
+   - 모든 카테고리별 입력 필드 컴포넌트화
+   - Props: `formData`, `setFormData`, `category`, `cities`
+
+2. `ScheduleFormModal.tsx` 생성
+   - Add/Edit 모드 지원 (`mode: 'add' | 'edit'`)
+   - `ScheduleFormFields` 사용
+   - 저장 로직 통합
+
+3. `AddScheduleModal_v2.tsx` → 래퍼로 변경
+   ```tsx
+   export default function AddScheduleModal(props) {
+     return <ScheduleFormModal mode="add" {...props} />;
+   }
+   ```
+
+4. `ScheduleCard_v2.tsx` 수정
+   - 인라인 편집 모드 제거
+   - "수정하기" 버튼 클릭 시 `ScheduleFormModal` 열기
+
+**장점:**
+- DRY 원칙 준수
+- 일관된 UX
+- 유지보수 용이
+- 버그 감소
+
+#### Option 2: 카드 내 편집을 모달로 통일
+현재 AddScheduleModal 로직을 그대로 사용하되, 편집 시에도 모달 띄우기
+
+**장점:**
+- 구현 빠름 (1-2시간)
+- 화면 공간 효율적
+
+**단점:**
+- 여전히 코드 중복
+
+---
+
+### 2. Database Schema Refactoring
 **문제점:**
 - `schedules` 테이블이 모든 카테고리의 필드를 평면적으로 포함하고 있음
 - 카테고리별 전용 필드(투어의 `tour_guide`, `tour_spots` 등)가 스키마에 존재하지 않음
@@ -106,3 +167,4 @@ CREATE TABLE schedule_accommodations (
 - MapView 업데이트 이슈 수정 (useMemo 사용)
 - 더블클릭 기능 추가 후 제거
 - `meeting_location`, `meeting_time` 필드 제거 및 공통 필드 사용 통일
+- 투어 데이터를 details 필드에 JSON으로 저장 (임시방편)
