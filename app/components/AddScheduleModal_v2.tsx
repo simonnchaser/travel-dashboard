@@ -136,7 +136,6 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
         };
       } else if (category === 'tour') {
         categoryData = {
-          meeting_location: formData.meeting_location,
           meeting_time: formData.meeting_time,
           tour_guide: formData.tour_guide,
           tour_spots: formData.tour_spots || [],
@@ -300,7 +299,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
               {/* Search Query */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  장소 검색
+                  {category === 'tour' ? '집합 장소' : '장소 검색'}
                   <span className="text-xs text-gray-500 ml-2">(구글맵에서 검색)</span>
                 </label>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -311,6 +310,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
                     placeholder={
                       category === 'accommodation' ? '호텔명 또는 주소 (예: 부다페스트 힐튼 호텔)' :
                       category === 'dining' ? '식당명 또는 주소 (예: 중앙시장)' :
+                      category === 'tour' ? '집합 장소 (예: 호텔 로비, 중앙역 앞)' :
                       '장소명 또는 주소'
                     }
                     className="flex-1 p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
@@ -625,27 +625,16 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
             <div className="bg-yellow-50 p-4 rounded-lg space-y-4 border-2 border-yellow-200">
               <h4 className="font-semibold text-yellow-900 mb-3">🎯 투어 정보</h4>
 
-              {/* 집합 장소 & 시간 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-yellow-800 mb-2">집합 장소</label>
-                  <input
-                    type="text"
-                    value={formData.meeting_location || ''}
-                    onChange={(e) => setFormData({ ...formData, meeting_location: e.target.value })}
-                    placeholder="예: 호텔 로비"
-                    className="w-full p-3 border-2 border-yellow-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-yellow-800 mb-2">집합 시간</label>
-                  <input
-                    type="time"
-                    value={formData.meeting_time || ''}
-                    onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })}
-                    className="w-full p-3 border-2 border-yellow-300 rounded-lg"
-                  />
-                </div>
+              {/* 집합 시간 */}
+              <div>
+                <label className="block text-sm font-semibold text-yellow-800 mb-2">집합 시간</label>
+                <input
+                  type="time"
+                  value={formData.meeting_time || ''}
+                  onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })}
+                  className="w-full p-3 border-2 border-yellow-300 rounded-lg"
+                />
+                <p className="text-xs text-yellow-700 mt-1">💡 집합 장소는 위의 "집합 장소" 섹션에서 입력하세요</p>
               </div>
 
               {/* 가이드 정보 */}
