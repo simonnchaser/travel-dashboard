@@ -136,7 +136,6 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
         };
       } else if (category === 'tour') {
         categoryData = {
-          meeting_time: formData.meeting_time,
           tour_guide: formData.tour_guide,
           tour_spots: formData.tour_spots || [],
         };
@@ -624,18 +623,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
           {category === 'tour' && (
             <div className="bg-yellow-50 p-4 rounded-lg space-y-4 border-2 border-yellow-200">
               <h4 className="font-semibold text-yellow-900 mb-3">🎯 투어 정보</h4>
-
-              {/* 집합 시간 */}
-              <div>
-                <label className="block text-sm font-semibold text-yellow-800 mb-2">집합 시간</label>
-                <input
-                  type="time"
-                  value={formData.meeting_time || ''}
-                  onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })}
-                  className="w-full p-3 border-2 border-yellow-300 rounded-lg"
-                />
-                <p className="text-xs text-yellow-700 mt-1">💡 집합 장소는 위의 "집합 장소" 섹션에서 입력하세요</p>
-              </div>
+              <p className="text-xs text-yellow-700 mb-3">💡 집합 장소와 시간은 위의 공통 입력 섹션을 사용하세요</p>
 
               {/* 가이드 정보 */}
               <div>
