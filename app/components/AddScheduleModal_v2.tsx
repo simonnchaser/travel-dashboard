@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScheduleCategory } from '../types/schedule';
 import { City } from '../types/tripSettings';
 import { supabase } from '../../lib/supabase';
@@ -42,6 +42,20 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
     tour_spots: [],
   });
   const [saving, setSaving] = useState(false);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   // 투어 스팟 추가
   const addTourSpot = () => {
@@ -192,7 +206,7 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
     <div className="fixed inset-0 bg-indigo-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl z-10">
           <h2 className="text-2xl font-bold text-gray-800">✨ 새 일정 추가</h2>
           <button
             onClick={onClose}

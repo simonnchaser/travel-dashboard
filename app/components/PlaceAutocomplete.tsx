@@ -241,7 +241,7 @@ export default function PlaceAutocomplete({
       {isOpen && predictions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-xl max-h-96 overflow-y-auto"
+          className="absolute z-[5] w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-xl max-h-96 overflow-y-auto"
         >
           {predictions.map((prediction) => {
             const details = placeDetails.get(prediction.place_id);
@@ -303,7 +303,7 @@ export default function PlaceAutocomplete({
       {isOpen && predictions.length === 0 && !isLoading && value.trim() && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-xl p-4 text-center text-gray-500"
+          className="absolute z-[5] w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-xl p-4 text-center text-gray-500"
         >
           검색 결과가 없습니다
         </div>
