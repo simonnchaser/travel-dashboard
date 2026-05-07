@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { Currency } from '../../lib/currency';
 import CostInput from './CostInput';
 import CostDisplay from './CostDisplay';
+import PlaceAutocomplete from './PlaceAutocomplete';
 
 interface ScheduleCardProps {
   schedule: ScheduleItem;
@@ -475,7 +476,7 @@ export default function ScheduleCard({
                       <div>
                         <p className="text-sm font-semibold text-gray-700 mb-2">투어 스팟</p>
                         <div className="space-y-2">
-                          {tourData.tour_spots.sort((a, b) => a.order - b.order).map((spot, idx) => (
+                          {tourData.tour_spots.sort((a: any, b: any) => a.order - b.order).map((spot: any, idx: number) => (
                             <div key={spot.id} className="bg-white p-3 rounded border border-yellow-200">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
@@ -649,55 +650,50 @@ export default function ScheduleCard({
                 {/* Google Maps - Hide for transport category */}
                 {editedSchedule.category !== 'transport' && (
                   <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-                    {/* Search Query */}
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        장소 검색
-                        <span className="text-xs text-gray-500 ml-2">(구글맵에서 검색)</span>
+                        {editedSchedule.category === 'tour' ? '집합 장소' : '장소 검색'}
+                        <span className="text-xs text-gray-500 ml-2">(자동완성)</span>
                       </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={editedSchedule.address || ''}
-                          onChange={(e) => setEditedSchedule({ ...editedSchedule, address: e.target.value })}
-                          placeholder={
-                            editedSchedule.category === 'accommodation' ? '호텔명 또는 주소 (예: 부다페스트 힐튼 호텔)' :
-                            editedSchedule.category === 'dining' ? '식당명 또는 주소 (예: 중앙시장)' :
-                            '장소명 또는 주소'
-                          }
-                          className="flex-1 p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const searchQuery = encodeURIComponent(editedSchedule.address || editedSchedule.title || '');
-                            window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
-                          }}
-                          disabled={!editedSchedule.address && !editedSchedule.title}
-                          className="px-4 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
-                        >
-                          🔍 검색
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Google Maps URL */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        구글맵 주소 (URL)
-                        <span className="text-xs text-gray-500 ml-2">(맵뷰 표시용)</span>
-                      </label>
-                      <input
-                        type="url"
-                        value={editedSchedule.google_maps_url || ''}
-                        onChange={(e) => setEditedSchedule({ ...editedSchedule, google_maps_url: e.target.value })}
-                        placeholder="위에서 검색 후 구글맵 URL을 복사해서 붙여넣으세요"
+                      <PlaceAutocomplete
+                        value={editedSchedule.address || ''}
+                        onChange={(value) => setEditedSchedule({ ...editedSchedule, address: value })}
+                        onPlaceSelect={(place) => {
+                          setEditedSchedule({
+                            ...editedSchedule,
+                            address: place.address,
+                            google_maps_url: place.google_maps_url,
+                            title: editedSchedule.title || place.name,
+                          });
+                        }}
+                        placeholder={
+                          editedSchedule.category === 'accommodation' ? '호텔명 또는 주소 (예: 부다페스트 힐튼 호텔)' :
+                          editedSchedule.category === 'dining' ? '식당명 또는 주소 (예: 중앙시장)' :
+                          editedSchedule.category === 'tour' ? '집합 장소 (예: 호텔 로비, 중앙역 앞)' :
+                          '장소명 또는 주소를 입력하세요'
+                        }
                         className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        💡 위에서 🔍 검색 → 구글맵에서 정확한 위치 찾기 → 주소창 URL 복사 → 여기 붙여넣기
+                      <p className="text-xs text-gray-500 mt-2">
+                        💡 장소를 입력하면 자동으로 후보가 나타납니다. 선택하면 구글맵 좌표가 자동 저장됩니다.
                       </p>
                     </div>
+
+                    {/* 선택된 구글맵 URL 표시 */}
+                    {editedSchedule.google_maps_url && (
+                      <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <span className="text-green-600">✓</span>
+                        <span className="text-sm text-green-700 font-medium">장소가 선택되었습니다</span>
+                        <a
+                          href={editedSchedule.google_maps_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-auto text-sm text-indigo-600 hover:text-indigo-800 underline"
+                        >
+                          구글맵에서 보기 →
+                        </a>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -848,73 +844,59 @@ export default function ScheduleCard({
                 {editedSchedule.category === 'transport' && (
                   <div className="bg-orange-50 p-4 rounded-lg space-y-3 border-2 border-orange-200">
                     <h3 className="font-semibold text-orange-900">🚌 교통 정보</h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-orange-800 mb-1">출발지</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={editedSchedule.departure || ''}
-                            onChange={(e) => setEditedSchedule({ ...editedSchedule, departure: e.target.value })}
-                            placeholder="부다페스트 공항"
-                            className="flex-1 p-2 border-2 border-orange-300 rounded-md"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const searchQuery = encodeURIComponent(editedSchedule.departure || '');
-                              window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
-                            }}
-                            disabled={!editedSchedule.departure}
-                            className="px-3 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap text-sm"
+                        <label className="block text-sm font-semibold text-orange-800 mb-2">출발지</label>
+                        <PlaceAutocomplete
+                          value={editedSchedule.departure || ''}
+                          onChange={(value) => setEditedSchedule({ ...editedSchedule, departure: value })}
+                          onPlaceSelect={(place) => {
+                            setEditedSchedule({
+                              ...editedSchedule,
+                              departure: place.name,
+                              departure_google_maps_url: place.google_maps_url,
+                            });
+                          }}
+                          placeholder="출발지 입력 (예: 부다페스트 공항)"
+                          className="w-full p-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                        />
+                        {editedSchedule.departure_google_maps_url && (
+                          <a
+                            href={editedSchedule.departure_google_maps_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
                           >
-                            🔍
-                          </button>
-                        </div>
+                            ✓ 출발지 확인
+                          </a>
+                        )}
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-orange-800 mb-1">도착지</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={editedSchedule.arrival || ''}
-                            onChange={(e) => setEditedSchedule({ ...editedSchedule, arrival: e.target.value })}
-                            placeholder="부다페스트 숙소"
-                            className="flex-1 p-2 border-2 border-orange-300 rounded-md"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const searchQuery = encodeURIComponent(editedSchedule.arrival || '');
-                              window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
-                            }}
-                            disabled={!editedSchedule.arrival}
-                            className="px-3 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap text-sm"
+                        <label className="block text-sm font-semibold text-orange-800 mb-2">도착지</label>
+                        <PlaceAutocomplete
+                          value={editedSchedule.arrival || ''}
+                          onChange={(value) => setEditedSchedule({ ...editedSchedule, arrival: value })}
+                          onPlaceSelect={(place) => {
+                            setEditedSchedule({
+                              ...editedSchedule,
+                              arrival: place.name,
+                              arrival_google_maps_url: place.google_maps_url,
+                            });
+                          }}
+                          placeholder="도착지 입력 (예: 부다페스트 숙소)"
+                          className="w-full p-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                        />
+                        {editedSchedule.arrival_google_maps_url && (
+                          <a
+                            href={editedSchedule.arrival_google_maps_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
                           >
-                            🔍
-                          </button>
-                        </div>
+                            ✓ 도착지 확인
+                          </a>
+                        )}
                       </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-orange-800 mb-1">출발지 구글맵 주소</label>
-                      <input
-                        type="url"
-                        value={editedSchedule.departure_google_maps_url || ''}
-                        onChange={(e) => setEditedSchedule({ ...editedSchedule, departure_google_maps_url: e.target.value })}
-                        placeholder="위 검색 버튼으로 구글맵에서 찾은 후 URL을 복사해서 붙여넣으세요"
-                        className="w-full p-2 border-2 border-orange-300 rounded-md"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-orange-800 mb-1">도착지 구글맵 주소</label>
-                      <input
-                        type="url"
-                        value={editedSchedule.arrival_google_maps_url || ''}
-                        onChange={(e) => setEditedSchedule({ ...editedSchedule, arrival_google_maps_url: e.target.value })}
-                        placeholder="위 검색 버튼으로 구글맵에서 찾은 후 URL을 복사해서 붙여넣으세요"
-                        className="w-full p-2 border-2 border-orange-300 rounded-md"
-                      />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>

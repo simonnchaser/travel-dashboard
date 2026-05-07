@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { Currency } from '../../lib/currency';
 import CostInput from './CostInput';
 import AutoExpandTextarea from './AutoExpandTextarea';
+import PlaceAutocomplete from './PlaceAutocomplete';
 
 interface AddScheduleModalProps {
   isOpen: boolean;
@@ -155,7 +156,9 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
         project_id: projectId,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       // Reset form
       setFormData({
@@ -303,56 +306,50 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
           {/* Google Maps - Hide for transport category */}
           {category !== 'transport' && (
             <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-              {/* Search Query */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   {category === 'tour' ? '집합 장소' : '장소 검색'}
-                  <span className="text-xs text-gray-500 ml-2">(구글맵에서 검색)</span>
+                  <span className="text-xs text-gray-500 ml-2">(자동완성)</span>
                 </label>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="text"
-                    value={formData.address || ''}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    placeholder={
-                      category === 'accommodation' ? '호텔명 또는 주소 (예: 부다페스트 힐튼 호텔)' :
-                      category === 'dining' ? '식당명 또는 주소 (예: 중앙시장)' :
-                      category === 'tour' ? '집합 장소 (예: 호텔 로비, 중앙역 앞)' :
-                      '장소명 또는 주소'
-                    }
-                    className="flex-1 p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const searchQuery = encodeURIComponent(formData.address || formData.title || '');
-                      window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
-                    }}
-                    disabled={!formData.address && !formData.title}
-                    className="w-full sm:w-auto px-4 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
-                  >
-                    🔍 검색
-                  </button>
-                </div>
-              </div>
-
-              {/* Google Maps URL */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  구글맵 주소 (URL)
-                  <span className="text-xs text-gray-500 ml-2">(맵뷰 표시용)</span>
-                </label>
-                <input
-                  type="url"
-                  value={formData.google_maps_url}
-                  onChange={(e) => setFormData({ ...formData, google_maps_url: e.target.value })}
-                  placeholder="위에서 검색 후 구글맵 URL을 복사해서 붙여넣으세요"
+                <PlaceAutocomplete
+                  value={formData.address || ''}
+                  onChange={(value) => setFormData({ ...formData, address: value })}
+                  onPlaceSelect={(place) => {
+                    setFormData({
+                      ...formData,
+                      address: place.address,
+                      google_maps_url: place.google_maps_url,
+                      title: formData.title || place.name,
+                    });
+                  }}
+                  placeholder={
+                    category === 'accommodation' ? '호텔명 또는 주소 (예: 부다페스트 힐튼 호텔)' :
+                    category === 'dining' ? '식당명 또는 주소 (예: 중앙시장)' :
+                    category === 'tour' ? '집합 장소 (예: 호텔 로비, 중앙역 앞)' :
+                    '장소명 또는 주소를 입력하세요'
+                  }
                   className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  💡 위에서 🔍 검색 → 구글맵에서 정확한 위치 찾기 → 주소창 URL 복사 → 여기 붙여넣기
+                <p className="text-xs text-gray-500 mt-2">
+                  💡 장소를 입력하면 자동으로 후보가 나타납니다. 선택하면 구글맵 좌표가 자동 저장됩니다.
                 </p>
               </div>
+
+              {/* 선택된 구글맵 URL 표시 (선택사항) */}
+              {formData.google_maps_url && (
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <span className="text-green-600">✓</span>
+                  <span className="text-sm text-green-700 font-medium">장소가 선택되었습니다</span>
+                  <a
+                    href={formData.google_maps_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-auto text-sm text-indigo-600 hover:text-indigo-800 underline"
+                  >
+                    구글맵에서 보기 →
+                  </a>
+                </div>
+              )}
             </div>
           )}
 
@@ -522,69 +519,55 @@ export default function AddScheduleModal({ isOpen, onClose, cities, onScheduleAd
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-orange-800 mb-2">출발지</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.departure || ''}
-                      onChange={(e) => setFormData({ ...formData, departure: e.target.value })}
-                      placeholder="부다페스트 공항"
-                      className="flex-1 p-3 border-2 border-orange-300 rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const searchQuery = encodeURIComponent(formData.departure || '');
-                        window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
-                      }}
-                      disabled={!formData.departure}
-                      className="px-4 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
+                  <PlaceAutocomplete
+                    value={formData.departure || ''}
+                    onChange={(value) => setFormData({ ...formData, departure: value })}
+                    onPlaceSelect={(place) => {
+                      setFormData({
+                        ...formData,
+                        departure: place.name,
+                        departure_google_maps_url: place.google_maps_url,
+                      });
+                    }}
+                    placeholder="출발지 입력 (예: 부다페스트 공항)"
+                    className="w-full p-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                  />
+                  {formData.departure_google_maps_url && (
+                    <a
+                      href={formData.departure_google_maps_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
                     >
-                      🔍 검색
-                    </button>
-                  </div>
+                      ✓ 출발지 확인
+                    </a>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-orange-800 mb-2">도착지</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.arrival || ''}
-                      onChange={(e) => setFormData({ ...formData, arrival: e.target.value })}
-                      placeholder="부다페스트 숙소"
-                      className="flex-1 p-3 border-2 border-orange-300 rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const searchQuery = encodeURIComponent(formData.arrival || '');
-                        window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
-                      }}
-                      disabled={!formData.arrival}
-                      className="px-4 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
+                  <PlaceAutocomplete
+                    value={formData.arrival || ''}
+                    onChange={(value) => setFormData({ ...formData, arrival: value })}
+                    onPlaceSelect={(place) => {
+                      setFormData({
+                        ...formData,
+                        arrival: place.name,
+                        arrival_google_maps_url: place.google_maps_url,
+                      });
+                    }}
+                    placeholder="도착지 입력 (예: 부다페스트 숙소)"
+                    className="w-full p-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                  />
+                  {formData.arrival_google_maps_url && (
+                    <a
+                      href={formData.arrival_google_maps_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
                     >
-                      🔍 검색
-                    </button>
-                  </div>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">출발지 구글맵 주소</label>
-                  <input
-                    type="url"
-                    value={formData.departure_google_maps_url || ''}
-                    onChange={(e) => setFormData({ ...formData, departure_google_maps_url: e.target.value })}
-                    placeholder="위 검색 버튼으로 구글맵에서 찾은 후 URL을 복사해서 붙여넣으세요"
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">도착지 구글맵 주소</label>
-                  <input
-                    type="url"
-                    value={formData.arrival_google_maps_url || ''}
-                    onChange={(e) => setFormData({ ...formData, arrival_google_maps_url: e.target.value })}
-                    placeholder="위 검색 버튼으로 구글맵에서 찾은 후 URL을 복사해서 붙여넣으세요"
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg"
-                  />
+                      ✓ 도착지 확인
+                    </a>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-orange-800 mb-2">출발 시간</label>
