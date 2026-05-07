@@ -10,41 +10,45 @@ function extractSearchQuery(url: string): string | null {
     }
     return null;
   } catch (error) {
-    console.error('Failed to extract search query:', error);
     return null;
   }
 }
 
+// Cache for geocoding results to avoid repeated API calls
+const geocodeCache = new Map<string, { lat: number; lng: number } | null>();
+
 /**
- * Geocode address/place name to coordinates using Google Maps Geocoding API
+ * Geocode address/place name to coordinates using server-side API
  * This is async and should be called separately, not in extractCoordinatesFromUrl
  */
 export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+  // Check cache first
+  if (geocodeCache.has(address)) {
+    return geocodeCache.get(address)!;
+  }
+
   try {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-      console.error('Google Maps API key not found');
+    const response = await fetch(
+      `/api/geocode?address=${encodeURIComponent(address)}`
+    );
+
+    if (!response.ok) {
+      geocodeCache.set(address, null);
       return null;
     }
 
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
-    );
-
     const data = await response.json();
 
-    if (data.status === 'OK' && data.results && data.results.length > 0) {
-      const location = data.results[0].geometry.location;
-      return {
-        lat: location.lat,
-        lng: location.lng
-      };
+    if (data.lat && data.lng) {
+      const coords = { lat: data.lat, lng: data.lng };
+      geocodeCache.set(address, coords);
+      return coords;
     }
 
-    console.warn(`Geocoding failed for "${address}":`, data.status);
+    geocodeCache.set(address, null);
     return null;
   } catch (error) {
-    console.error('Geocoding failed:', error);
+    geocodeCache.set(address, null);
     return null;
   }
 }
@@ -95,11 +99,20 @@ export function extractCoordinatesFromUrl(url: string): { lat: number; lng: numb
       };
     }
 
+    // Format 5: query=lat,lng parameter (from PlaceAutocomplete)
+    const queryMatch = url.match(/[?&]query=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (queryMatch) {
+      console.log('✅ Matched query format:', { lat: parseFloat(queryMatch[1]), lng: parseFloat(queryMatch[2]) });
+      return {
+        lat: parseFloat(queryMatch[1]),
+        lng: parseFloat(queryMatch[2])
+      };
+    }
+
     // If it's a search URL, we can't extract coordinates directly
     // The calling code should use geocodeAddress separately
     return null;
   } catch (error) {
-    console.error('Failed to extract coordinates from URL:', error);
     return null;
   }
 }
@@ -118,7 +131,6 @@ export async function extractCoordinatesFromUrlWithGeocoding(url: string): Promi
   // If that fails, check if it's a search URL and geocode it
   const searchQuery = extractSearchQuery(url);
   if (searchQuery) {
-    console.log(`Geocoding search query: "${searchQuery}"`);
     return await geocodeAddress(searchQuery);
   }
 
