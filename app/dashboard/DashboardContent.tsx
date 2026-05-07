@@ -7,7 +7,7 @@ import CityTabs from '../components/CityTabs';
 import ScheduleList from '../components/ScheduleList';
 import StatsCard from '../components/StatsCard';
 import CostKpiDashboard from '../components/CostKpiDashboard';
-import AddScheduleModal from '../components/AddScheduleModal_v2';
+import ScheduleModal from '../components/ScheduleModal';
 import TableView from '../components/TableView';
 import MapView from '../components/MapView';
 import { supabase } from '../../lib/supabase';
@@ -34,7 +34,9 @@ export default function DashboardContent() {
   const [scheduleData, setScheduleData] = useState<Record<string, ScheduleItem[]>>({});
   const [selectedCityId, setSelectedCityId] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [editingSchedule, setEditingSchedule] = useState<ScheduleItem | undefined>(undefined);
   const [viewMode, setViewMode] = useState<'card' | 'table' | 'map'>('card');
   const [reservationFilter, setReservationFilter] = useState<ReservationFilter>('all');
   const [sortBy, setSortBy] = useState<'time' | 'category' | 'city'>('time');
@@ -349,7 +351,11 @@ export default function DashboardContent() {
 
           {/* Add Button */}
           <button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => {
+              setModalMode('add');
+              setEditingSchedule(undefined);
+              setIsModalOpen(true);
+            }}
             className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-md transition-all transform hover:scale-105"
           >
             ➕ 새 일정 추가
@@ -468,6 +474,11 @@ export default function DashboardContent() {
                 [selectedCityId]: updatedSchedules
               });
             }}
+            onEdit={(schedule) => {
+              setModalMode('edit');
+              setEditingSchedule(schedule);
+              setIsModalOpen(true);
+            }}
           />
         ) : viewMode === 'table' ? (
           <TableView
@@ -479,12 +490,17 @@ export default function DashboardContent() {
           <MapView schedules={allSchedules} />
         )}
 
-        {/* Add Schedule Modal */}
-        <AddScheduleModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
+        {/* Schedule Modal (Add/Edit) */}
+        <ScheduleModal
+          mode={modalMode}
+          schedule={editingSchedule}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingSchedule(undefined);
+          }}
           cities={project.cities}
-          onScheduleAdded={() => loadData()}
+          onSuccess={() => loadData()}
           projectId={project.id}
         />
       </div>

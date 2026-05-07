@@ -10,9 +10,10 @@ interface ScheduleListProps {
   cityId: string;
   cityName: string;
   onUpdate: (schedules: ScheduleItem[]) => void;
+  onEdit?: (schedule: ScheduleItem) => void;
 }
 
-export default function ScheduleList({ schedules, cityId, cityName, onUpdate }: ScheduleListProps) {
+export default function ScheduleList({ schedules, cityId, cityName, onUpdate, onEdit }: ScheduleListProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleExpand = (index: number) => {
@@ -85,6 +86,7 @@ export default function ScheduleList({ schedules, cityId, cityName, onUpdate }: 
           onToggleExpand={() => toggleExpand(index)}
           onUpdate={(updatedItem) => updateScheduleItem(index, updatedItem)}
           onDelete={() => deleteScheduleItem(index, schedule.id)}
+          onEdit={() => onEdit?.(schedule)}
         />
       ))}
     </div>
