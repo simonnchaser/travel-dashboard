@@ -46,6 +46,12 @@ export interface ScheduleItem {
 
   // Accommodation fields
   address?: string;
+  accommodation_type?: 'checkin' | 'checkout';  // 체크인/체크아웃 구분
+  linked_accommodation_id?: string;  // 짝이 되는 아이템 ID
+  stay_duration?: string;  // "2박" (자동 계산)
+  total_nights?: number;   // 2 (자동 계산)
+
+  // Legacy (backward compatibility)
   checkin_checkout?: string;
   duration?: string;
 
@@ -62,12 +68,16 @@ export interface ScheduleItem {
   // Transport fields
   departure?: string;
   arrival?: string;
+  departure_city?: string;  // 출발 도시
+  arrival_city?: string;    // 도착 도시
   transport_method?: string;
   travel_duration?: string;
   departure_google_maps_url?: string | null;
   arrival_google_maps_url?: string | null;
   departure_time?: string; // 출발 시간
   arrival_time?: string;   // 도착 시간
+  transport_type?: 'departure' | 'arrival';  // 출발/도착 구분
+  linked_transport_id?: string;  // 짝이 되는 아이템 ID
 
   // Tour fields
   meeting_location?: string; // 집합 장소

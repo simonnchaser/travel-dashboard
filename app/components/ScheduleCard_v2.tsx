@@ -3,6 +3,10 @@
 import { ScheduleItem, ScheduleCategory } from '../types/schedule';
 import { supabase } from '../../lib/supabase';
 import CostDisplay from './CostDisplay';
+import {
+  getPuzzleCardStyle,
+  getPuzzleBadgeStyle
+} from '../styles/puzzleStyles';
 
 interface ScheduleCardProps {
   schedule: ScheduleItem;
@@ -93,23 +97,27 @@ export default function ScheduleCard({
 
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+    <div className={`${getPuzzleCardStyle(schedule.category)} overflow-hidden`}>
       {/* Card Header - Always Visible */}
       <div
-        className="p-4 cursor-pointer hover:bg-gray-50"
+        className="p-4 cursor-pointer"
         onClick={onToggleExpand}
       >
         {/* Desktop Layout */}
         <div className="hidden md:flex items-start justify-between gap-4">
           {/* Left: Number and Title */}
           <div className="flex items-start gap-3">
-            <span className="text-2xl font-bold text-indigo-600">#{index + 1}</span>
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold flex items-center justify-center text-lg shadow-[3px_3px_0px_0px_rgba(99,102,241,0.3)]">
+              {index + 1}
+            </div>
             <div>
               <h3 className="text-xl font-bold text-gray-800">{schedule.title}</h3>
               <p className="text-sm text-gray-500">
                 {schedule.date} {schedule.time && `- ${schedule.time}`}
               </p>
-              <p className="text-xs text-gray-400 mt-1">{categoryLabels[schedule.category]}</p>
+              <span className={`inline-block mt-2 ${getPuzzleBadgeStyle(schedule.category)}`}>
+                {categoryLabels[schedule.category]}
+              </span>
             </div>
           </div>
 
@@ -145,13 +153,15 @@ export default function ScheduleCard({
                   e.stopPropagation();
                   cycleReservationStatus();
                 }}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-md ${
-                  schedule.reservation.status === '완료'
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                className={`
+                  px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200
+                  ${schedule.reservation.status === '완료'
+                    ? 'bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-[3px_3px_0px_0px_rgba(16,185,129,0.3)] hover:shadow-[5px_5px_0px_0px_rgba(16,185,129,0.4)] hover:-translate-y-0.5'
                     : schedule.reservation.status === '불필요'
-                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                    ? 'bg-gradient-to-br from-blue-400 to-cyan-500 text-white shadow-[3px_3px_0px_0px_rgba(59,130,246,0.3)] hover:shadow-[5px_5px_0px_0px_rgba(59,130,246,0.4)] hover:-translate-y-0.5'
+                    : 'bg-white text-gray-700 border-2 border-gray-300 shadow-[3px_3px_0px_0px_rgba(156,163,175,0.2)] hover:shadow-[5px_5px_0px_0px_rgba(156,163,175,0.3)] hover:-translate-y-0.5'
+                  }
+                `}
                 title="클릭하여 상태 변경: 예정 → 완료 → 불필요 → 예정"
               >
                 {schedule.reservation.status || '예정'}
@@ -159,8 +169,12 @@ export default function ScheduleCard({
             </div>
 
             {/* Expand/Collapse Button */}
-            <button className="text-gray-400 hover:text-gray-600">
-              {isExpanded ? '▲' : '▼'}
+            <button className={`
+              text-2xl transition-all duration-200
+              ${isExpanded ? 'rotate-180 text-indigo-600' : 'rotate-0 text-gray-400'}
+              hover:text-indigo-500 hover:scale-110
+            `}>
+              ▼
             </button>
           </div>
         </div>
@@ -170,17 +184,25 @@ export default function ScheduleCard({
           {/* Top Row: Number, Title, Expand Button */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2">
-              <span className="text-xl font-bold text-indigo-600">#{index + 1}</span>
+              <div className="shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold flex items-center justify-center text-sm shadow-[2px_2px_0px_0px_rgba(99,102,241,0.3)]">
+                {index + 1}
+              </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-800">{schedule.title}</h3>
                 <p className="text-xs text-gray-500 mt-1">
                   {schedule.date} {schedule.time && `- ${schedule.time}`}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">{categoryLabels[schedule.category]}</p>
+                <span className={`inline-block mt-1.5 ${getPuzzleBadgeStyle(schedule.category)}`}>
+                  {categoryLabels[schedule.category]}
+                </span>
               </div>
             </div>
-            <button className="text-gray-400 hover:text-gray-600 text-xl shrink-0">
-              {isExpanded ? '▲' : '▼'}
+            <button className={`
+              text-xl transition-all duration-200 shrink-0
+              ${isExpanded ? 'rotate-180 text-indigo-600' : 'rotate-0 text-gray-400'}
+              hover:text-indigo-500 hover:scale-110
+            `}>
+              ▼
             </button>
           </div>
 
@@ -214,13 +236,15 @@ export default function ScheduleCard({
                 e.stopPropagation();
                 cycleReservationStatus();
               }}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                schedule.reservation.status === '완료'
-                  ? 'bg-green-100 text-green-700'
+              className={`
+                px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200
+                ${schedule.reservation.status === '완료'
+                  ? 'bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-[2px_2px_0px_0px_rgba(16,185,129,0.3)]'
                   : schedule.reservation.status === '불필요'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-600'
-              }`}
+                  ? 'bg-gradient-to-br from-blue-400 to-cyan-500 text-white shadow-[2px_2px_0px_0px_rgba(59,130,246,0.3)]'
+                  : 'bg-white text-gray-700 border-2 border-gray-300 shadow-[2px_2px_0px_0px_rgba(156,163,175,0.2)]'
+                }
+              `}
               title="예약 상태"
             >
               {schedule.reservation.status || '예정'}
@@ -231,11 +255,14 @@ export default function ScheduleCard({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-gray-200 p-4 md:p-6 bg-gray-50 space-y-4">
+        <div className="border-t-4 border-indigo-100 p-4 md:p-6 bg-gradient-to-b from-gray-50 to-white space-y-4">
           {/* Details Section */}
           {schedule.details && (
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <p className="text-sm font-semibold text-gray-700 mb-2">📋 상세 정보</p>
+            <div className="bg-white p-5 rounded-2xl border-2 border-indigo-100 shadow-[3px_3px_0px_0px_rgba(99,102,241,0.1)]">
+              <p className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                <span className="text-lg">📋</span>
+                상세 정보
+              </p>
               <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{schedule.details}</p>
             </div>
           )}
@@ -255,8 +282,11 @@ export default function ScheduleCard({
 
           {/* Category-Specific Fields */}
           {schedule.category === 'accommodation' && (
-            <div className="bg-blue-50 p-4 rounded-lg space-y-2">
-              <h4 className="font-semibold text-blue-900 mb-3">🏨 숙소 정보</h4>
+            <div className="bg-purple-50 border-2 border-purple-200 p-5 rounded-2xl space-y-3 shadow-[4px_4px_0px_0px_rgba(168,85,247,0.1)]">
+              <h4 className="font-bold text-purple-900 mb-3 flex items-center gap-2 text-lg">
+                <span className="text-2xl">🏨</span>
+                숙소 정보
+              </h4>
               {schedule.address && (
                 <div>
                   <p className="text-sm font-semibold text-gray-700">주소</p>
@@ -279,8 +309,11 @@ export default function ScheduleCard({
           )}
 
           {schedule.category === 'dining' && (
-            <div className="bg-orange-50 p-4 rounded-lg space-y-2">
-              <h4 className="font-semibold text-orange-900 mb-3">🍽️ 식사 정보</h4>
+            <div className="bg-green-50 border-2 border-green-200 p-5 rounded-2xl space-y-3 shadow-[4px_4px_0px_0px_rgba(34,197,94,0.1)]">
+              <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2 text-lg">
+                <span className="text-2xl">🍽️</span>
+                식사 정보
+              </h4>
               {schedule.restaurant_name && (
                 <div>
                   <p className="text-sm font-semibold text-gray-700">레스토랑명</p>
@@ -309,8 +342,11 @@ export default function ScheduleCard({
           )}
 
           {schedule.category === 'activity' && (
-            <div className="bg-purple-50 p-4 rounded-lg space-y-2">
-              <h4 className="font-semibold text-purple-900 mb-3">🎭 액티비티 정보</h4>
+            <div className="bg-amber-50 border-2 border-amber-200 p-5 rounded-2xl space-y-3 shadow-[4px_4px_0px_0px_rgba(251,191,36,0.1)]">
+              <h4 className="font-bold text-amber-900 mb-3 flex items-center gap-2 text-lg">
+                <span className="text-2xl">🎭</span>
+                액티비티 정보
+              </h4>
               {schedule.activity_duration && (
                 <div>
                   <p className="text-sm font-semibold text-gray-700">소요 시간</p>
@@ -333,8 +369,11 @@ export default function ScheduleCard({
           )}
 
           {schedule.category === 'transport' && (
-            <div className="bg-green-50 p-4 rounded-lg space-y-2">
-              <h4 className="font-semibold text-green-900 mb-3">🚌 교통 정보</h4>
+            <div className="bg-blue-50 border-2 border-blue-200 p-5 rounded-2xl space-y-3 shadow-[4px_4px_0px_0px_rgba(59,130,246,0.1)]">
+              <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                <span className="text-2xl">🚌</span>
+                교통 정보
+              </h4>
               {schedule.departure && (
                 <div>
                   <p className="text-sm font-semibold text-gray-700">출발지</p>
@@ -363,8 +402,11 @@ export default function ScheduleCard({
           )}
 
           {schedule.category === 'tour' && (
-            <div className="bg-yellow-50 p-4 rounded-lg space-y-3">
-              <h4 className="font-semibold text-yellow-900 mb-3">🎯 투어 정보</h4>
+            <div className="bg-orange-50 border-2 border-orange-200 p-5 rounded-2xl space-y-3 shadow-[4px_4px_0px_0px_rgba(249,115,22,0.1)]">
+              <h4 className="font-bold text-orange-900 mb-3 flex items-center gap-2 text-lg">
+                <span className="text-2xl">🎯</span>
+                투어 정보
+              </h4>
               {schedule.meeting_location && (
                 <div>
                   <p className="text-sm font-semibold text-gray-700">집합 장소</p>
@@ -388,16 +430,16 @@ export default function ScheduleCard({
                   <p className="text-sm font-semibold text-gray-700 mb-2">투어 스팟</p>
                   <div className="space-y-2">
                     {tourData.tour_spots.sort((a: any, b: any) => a.order - b.order).map((spot: any, idx: number) => (
-                      <div key={spot.id} className="bg-white p-3 rounded border border-yellow-200">
+                      <div key={spot.id} className="bg-white p-4 rounded-xl border-2 border-orange-100 shadow-[2px_2px_0px_0px_rgba(249,115,22,0.15)] hover:shadow-[3px_3px_0px_0px_rgba(249,115,22,0.2)] transition-all">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-yellow-700">#{idx + 1}</span>
-                            <span className="font-medium text-gray-800">{spot.name}</span>
+                            <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-lg">#{idx + 1}</span>
+                            <span className="font-semibold text-gray-800">{spot.name}</span>
                           </div>
-                          <span className="text-sm text-gray-600">⏱️ {spot.duration}</span>
+                          <span className="text-sm text-gray-600 font-medium">⏱️ {spot.duration}</span>
                         </div>
                         {spot.details && (
-                          <p className="text-sm text-gray-600 pl-7">{spot.details}</p>
+                          <p className="text-sm text-gray-600 pl-1">{spot.details}</p>
                         )}
                       </div>
                     ))}
@@ -409,39 +451,42 @@ export default function ScheduleCard({
 
           {/* Google Maps Link */}
           {schedule.google_maps_url && (
-            <div className="flex items-center gap-2">
-              <span className="text-xl">📍</span>
-              <a
-                href={schedule.google_maps_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:text-indigo-800 underline"
-              >
+            <a
+              href={schedule.google_maps_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-4 bg-white border-2 border-indigo-200 rounded-xl shadow-[3px_3px_0px_0px_rgba(99,102,241,0.15)] hover:shadow-[5px_5px_0px_0px_rgba(99,102,241,0.2)] hover:-translate-y-0.5 transition-all duration-200 group"
+            >
+              <span className="text-2xl">📍</span>
+              <span className="text-indigo-600 font-semibold group-hover:text-indigo-800">
                 구글맵에서 보기
-              </a>
-            </div>
+              </span>
+            </a>
           )}
 
           {/* Reservation Link */}
           {schedule.reservation_link && (
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🔗</span>
-              <a
-                href={schedule.reservation_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:text-indigo-800 underline"
-              >
+            <a
+              href={schedule.reservation_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-4 bg-white border-2 border-purple-200 rounded-xl shadow-[3px_3px_0px_0px_rgba(168,85,247,0.15)] hover:shadow-[5px_5px_0px_0px_rgba(168,85,247,0.2)] hover:-translate-y-0.5 transition-all duration-200 group"
+            >
+              <span className="text-2xl">🔗</span>
+              <span className="text-purple-600 font-semibold group-hover:text-purple-800">
                 예약 링크
-              </a>
-            </div>
+              </span>
+            </a>
           )}
 
           {/* Notes */}
           {schedule.notes && (
-            <div className="border-t pt-4">
-              <p className="text-sm font-semibold text-gray-700 mb-2">📝 메모</p>
-              <p className="text-gray-600 whitespace-pre-wrap">{schedule.notes}</p>
+            <div className="bg-amber-50 border-2 border-amber-200 p-5 rounded-2xl shadow-[3px_3px_0px_0px_rgba(251,191,36,0.1)]">
+              <p className="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
+                <span className="text-lg">📝</span>
+                메모
+              </p>
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{schedule.notes}</p>
             </div>
           )}
 
@@ -452,7 +497,7 @@ export default function ScheduleCard({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold shadow-md hover:shadow-lg"
+              className="px-6 py-3 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-xl font-bold shadow-[4px_4px_0px_0px_rgba(99,102,241,0.3)] hover:shadow-[6px_6px_0px_0px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 active:shadow-[3px_3px_0px_0px_rgba(99,102,241,0.3)] active:translate-y-0 transition-all duration-200"
             >
               ✏️ 수정하기
             </button>
@@ -463,7 +508,7 @@ export default function ScheduleCard({
                   onDelete();
                 }
               }}
-              className="px-4 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors font-semibold"
+              className="px-6 py-3 bg-white text-red-600 border-2 border-red-300 rounded-xl font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)] hover:shadow-[6px_6px_0px_0px_rgba(239,68,68,0.3)] hover:-translate-y-0.5 active:shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)] active:translate-y-0 transition-all duration-200"
             >
               🗑️ 삭제
             </button>

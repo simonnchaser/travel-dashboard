@@ -42,13 +42,69 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
     google_maps_url: '',
     reservation_status: '예정',
     tour_spots: [],
+    // Accommodation fields
+    checkin_date: '',
+    checkin_time: '15:00',
+    checkout_date: '',
+    checkout_time: '10:00',
   });
   const [saving, setSaving] = useState(false);
+
+  // formData 초기화 함수
+  const resetFormData = () => {
+    setFormData({
+      date: '',
+      time: '09:00',
+      title: '',
+      details: '',
+      cost: '',
+      currency: 'KRW' as Currency,
+      num_people: 1,
+      google_maps_url: '',
+      reservation_status: '예정',
+      tour_spots: [],
+      // Accommodation fields
+      checkin_date: '',
+      checkin_time: '15:00',
+      checkout_date: '',
+      checkout_time: '10:00',
+      // Transport fields
+      departure_date: '',
+      arrival_date: '',
+      departure_time: '09:00',
+      arrival_time: '12:00',
+      departure_city: '',
+      arrival_city: '',
+      departure: '',
+      arrival: '',
+      transport_method: '',
+      travel_duration: '',
+      departure_google_maps_url: '',
+      arrival_google_maps_url: '',
+      // Dining fields
+      restaurant_name: '',
+      menu: '',
+      reservation_time: '',
+      address: '',
+      // Activity fields
+      activity_duration: '',
+      entrance_fee: '',
+      operating_hours: '',
+      // Tour fields
+      tour_guide: '',
+    });
+    setCategory('activity');
+    setSelectedCityId(cities[0]?.id || '');
+  };
 
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Add 모드일 때만 초기화
+      if (mode === 'add') {
+        resetFormData();
+      }
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -57,7 +113,7 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, mode]);
 
   // Populate formData when in edit mode
   useEffect(() => {
@@ -114,6 +170,15 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
         arrival_google_maps_url: schedule.arrival_google_maps_url || '',
         departure_time: schedule.departure_time || '',
         arrival_time: schedule.arrival_time || '',
+        departure_date: '',
+        arrival_date: '',
+        departure_city: '',
+        arrival_city: '',
+        // Accommodation fields
+        checkin_date: '',
+        checkin_time: '15:00',
+        checkout_date: '',
+        checkout_time: '10:00',
       });
     }
   }, [mode, schedule]);
@@ -191,14 +256,187 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
         reservation_status: formData.reservation_status,
       };
 
-      let categoryData = {};
+      // Accommodation: Create 2 items (checkin + checkout)
       if (category === 'accommodation') {
-        categoryData = {
-          address: formData.address,
-          checkin_checkout: formData.checkin_checkout,
-          duration: formData.duration,
-        };
-      } else if (category === 'dining') {
+        if (!formData.checkin_date || !formData.checkout_date) {
+          alert('체크인/체크아웃 날짜를 입력해주세요!');
+          setSaving(false);
+          return;
+        }
+
+        // Calculate stay duration
+        const checkinDate = new Date(formData.checkin_date);
+        const checkoutDate = new Date(formData.checkout_date);
+        const nightsDiff = Math.floor(
+          (checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (nightsDiff <= 0) {
+          alert('체크아웃 날짜는 체크인 날짜보다 이후여야 합니다!');
+          setSaving(false);
+          return;
+        }
+
+        const stayDuration = `${nightsDiff}박`;
+
+        if (mode === 'add') {
+          // 1. Create checkin item
+          const { data: checkinData, error: checkinError } = await supabase
+            .from('schedules')
+            .insert({
+              ...baseData,
+              date: formData.checkin_date,
+              time: formData.checkin_time,
+              title: `${formData.title} (체크인)`,
+              address: formData.address,
+              accommodation_type: 'checkin',
+              stay_duration: stayDuration,
+              total_nights: nightsDiff,
+              project_id: projectId,
+            })
+            .select()
+            .single();
+
+          if (checkinError) throw checkinError;
+
+          // 2. Create checkout item
+          const { data: checkoutData, error: checkoutError } = await supabase
+            .from('schedules')
+            .insert({
+              ...baseData,
+              date: formData.checkout_date,
+              time: formData.checkout_time,
+              title: `${formData.title} (체크아웃)`,
+              address: formData.address,
+              accommodation_type: 'checkout',
+              linked_accommodation_id: checkinData.id,
+              stay_duration: stayDuration,
+              total_nights: nightsDiff,
+              project_id: projectId,
+            })
+            .select()
+            .single();
+
+          if (checkoutError) throw checkoutError;
+
+          // 3. Update checkin item with checkout ID
+          await supabase
+            .from('schedules')
+            .update({ linked_accommodation_id: checkoutData.id })
+            .eq('id', checkinData.id);
+
+          // Success - reset and close
+          resetFormData();
+          onSuccess();
+          onClose();
+          setSaving(false);
+          return; // Exit early for accommodation
+        } else if (mode === 'edit' && schedule?.id) {
+          // Edit mode for accommodation
+          // TODO: Handle edit mode for checkin/checkout items
+          alert('숙소 수정 기능은 곧 추가됩니다!');
+          setSaving(false);
+          return;
+        }
+      }
+
+      // Transport: Create 2 items (departure + arrival)
+      if (category === 'transport') {
+        if (!formData.departure_date || !formData.arrival_date) {
+          alert('출발/도착 날짜를 입력해주세요!');
+          setSaving(false);
+          return;
+        }
+
+        if (!formData.departure_city || !formData.arrival_city) {
+          alert('출발/도착 도시를 입력해주세요!');
+          setSaving(false);
+          return;
+        }
+
+        if (mode === 'add') {
+          // 1. Create departure item
+          const { data: departureData, error: departureError } = await supabase
+            .from('schedules')
+            .insert({
+              ...baseData,
+              date: formData.departure_date,
+              time: formData.departure_time || '09:00',
+              title: `${formData.title} (출발)`,
+              city: formData.departure_city,
+              google_maps_url: formData.departure_google_maps_url,
+              departure: formData.departure,
+              arrival: formData.arrival,
+              departure_city: formData.departure_city,
+              arrival_city: formData.arrival_city,
+              transport_method: formData.transport_method,
+              travel_duration: formData.travel_duration,
+              departure_google_maps_url: formData.departure_google_maps_url,
+              arrival_google_maps_url: formData.arrival_google_maps_url,
+              departure_time: formData.departure_time,
+              arrival_time: formData.arrival_time,
+              transport_type: 'departure',
+              project_id: projectId,
+            })
+            .select()
+            .single();
+
+          if (departureError) throw departureError;
+
+          // 2. Create arrival item
+          const { data: arrivalData, error: arrivalError } = await supabase
+            .from('schedules')
+            .insert({
+              ...baseData,
+              date: formData.arrival_date,
+              time: formData.arrival_time || '12:00',
+              title: `${formData.title} (도착)`,
+              city: formData.arrival_city,
+              google_maps_url: formData.arrival_google_maps_url,
+              departure: formData.departure,
+              arrival: formData.arrival,
+              departure_city: formData.departure_city,
+              arrival_city: formData.arrival_city,
+              transport_method: formData.transport_method,
+              travel_duration: formData.travel_duration,
+              departure_google_maps_url: formData.departure_google_maps_url,
+              arrival_google_maps_url: formData.arrival_google_maps_url,
+              departure_time: formData.departure_time,
+              arrival_time: formData.arrival_time,
+              transport_type: 'arrival',
+              linked_transport_id: departureData.id,
+              project_id: projectId,
+            })
+            .select()
+            .single();
+
+          if (arrivalError) throw arrivalError;
+
+          // 3. Update departure item with arrival ID
+          await supabase
+            .from('schedules')
+            .update({ linked_transport_id: arrivalData.id })
+            .eq('id', departureData.id);
+
+          // Success - reset and close
+          resetFormData();
+          onSuccess();
+          onClose();
+          setSaving(false);
+          return; // Exit early for transport
+        } else if (mode === 'edit' && schedule?.id) {
+          // Edit mode for transport
+          // TODO: Handle edit mode for departure/arrival items
+          alert('교통 수정 기능은 곧 추가됩니다!');
+          setSaving(false);
+          return;
+        }
+      }
+
+      // Category-specific data (for dining, activity, tour only)
+      // Note: accommodation and transport are handled above with early return
+      let categoryData = {};
+      if (category === 'dining') {
         categoryData = {
           restaurant_name: formData.restaurant_name,
           menu: formData.menu,
@@ -210,17 +448,6 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
           activity_duration: formData.activity_duration,
           entrance_fee: formData.entrance_fee,
           operating_hours: formData.operating_hours,
-        };
-      } else if (category === 'transport') {
-        categoryData = {
-          departure: formData.departure,
-          arrival: formData.arrival,
-          transport_method: formData.transport_method,
-          travel_duration: formData.travel_duration,
-          departure_google_maps_url: formData.departure_google_maps_url,
-          arrival_google_maps_url: formData.arrival_google_maps_url,
-          departure_time: formData.departure_time,
-          arrival_time: formData.arrival_time,
         };
       }
       // Note: tour category no longer adds to categoryData
@@ -249,21 +476,7 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
       }
 
       // Reset form
-      setFormData({
-        date: '',
-        time: '09:00',
-        title: '',
-        details: '',
-        cost: '',
-        currency: 'KRW' as Currency,
-        num_people: 1,
-        google_maps_url: '',
-        reservation_status: '예정',
-        tour_spots: [],
-      });
-      setCategory('activity');
-      setSelectedCityId(cities[0]?.id || '');
-
+      resetFormData();
       onSuccess();
       onClose();
     } catch (error) {
@@ -317,43 +530,49 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
 
           {/* Basic Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* City */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">도시 *</label>
-              <select
-                value={selectedCityId}
-                onChange={(e) => setSelectedCityId(e.target.value)}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                required
-              >
-                {cities.map((city) => (
-                  <option key={city.id} value={city.id}>{city.name}</option>
-                ))}
-              </select>
-            </div>
+            {/* City - 교통은 각 출발/도착에서 입력받으므로 숨김 */}
+            {category !== 'transport' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">도시 *</label>
+                <select
+                  value={selectedCityId}
+                  onChange={(e) => setSelectedCityId(e.target.value)}
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  required
+                >
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>{city.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-            {/* Date */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">날짜 *</label>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                required
-              />
-            </div>
+            {/* Date - 숙소와 교통은 각각의 입력란에서 받으므로 숨김 */}
+            {category !== 'accommodation' && category !== 'transport' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">날짜 *</label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            )}
 
-            {/* Time */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">시간</label>
-              <input
-                type="time"
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-            </div>
+            {/* Time - 숙소와 교통은 각각의 입력란에서 받으므로 숨김 */}
+            {category !== 'accommodation' && category !== 'transport' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">시간</label>
+                <input
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+            )}
           </div>
 
           {/* Title */}
@@ -487,37 +706,72 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
           {category === 'accommodation' && (
             <div className="bg-blue-50 p-4 rounded-lg space-y-4 border-2 border-blue-200">
               <h4 className="font-semibold text-blue-900 mb-3">🏨 숙소 정보</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-blue-800 mb-2">주소</label>
-                  <input
-                    type="text"
-                    value={formData.address || ''}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full p-3 border-2 border-blue-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-blue-800 mb-2">체크인/체크아웃</label>
-                  <input
-                    type="text"
-                    value={formData.checkin_checkout || ''}
-                    onChange={(e) => setFormData({ ...formData, checkin_checkout: e.target.value })}
-                    placeholder="15:00 / 11:00"
-                    className="w-full p-3 border-2 border-blue-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-blue-800 mb-2">숙박 기간</label>
-                  <input
-                    type="text"
-                    value={formData.duration || ''}
-                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                    placeholder="2박 3일"
-                    className="w-full p-3 border-2 border-blue-300 rounded-lg"
-                  />
+
+              {/* Check-in */}
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <h5 className="text-sm font-semibold text-blue-800 mb-3">체크인</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">날짜 *</label>
+                    <input
+                      type="date"
+                      value={formData.checkin_date || ''}
+                      onChange={(e) => setFormData({ ...formData, checkin_date: e.target.value })}
+                      className="w-full p-2 border-2 border-blue-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">시간</label>
+                    <input
+                      type="time"
+                      value={formData.checkin_time || '15:00'}
+                      onChange={(e) => setFormData({ ...formData, checkin_time: e.target.value })}
+                      className="w-full p-2 border-2 border-blue-300 rounded-lg"
+                    />
+                  </div>
                 </div>
               </div>
+
+              {/* Check-out */}
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <h5 className="text-sm font-semibold text-blue-800 mb-3">체크아웃</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">날짜 *</label>
+                    <input
+                      type="date"
+                      value={formData.checkout_date || ''}
+                      onChange={(e) => setFormData({ ...formData, checkout_date: e.target.value })}
+                      className="w-full p-2 border-2 border-blue-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">시간</label>
+                    <input
+                      type="time"
+                      value={formData.checkout_time || '10:00'}
+                      onChange={(e) => setFormData({ ...formData, checkout_time: e.target.value })}
+                      className="w-full p-2 border-2 border-blue-300 rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto-calculated duration */}
+              {formData.checkin_date && formData.checkout_date && (
+                <div className="bg-blue-100 p-3 rounded-lg border border-blue-300">
+                  <p className="text-sm text-blue-900">
+                    ℹ️ 숙박 기간: <strong>
+                      {Math.floor(
+                        (new Date(formData.checkout_date).getTime() - new Date(formData.checkin_date).getTime())
+                        / (1000 * 60 * 60 * 24)
+                      )}박
+                    </strong> (자동 계산)
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -606,98 +860,176 @@ export default function ScheduleModal({ isOpen, onClose, cities, onSuccess, proj
           {category === 'transport' && (
             <div className="bg-orange-50 p-4 rounded-lg space-y-4 border-2 border-orange-200">
               <h4 className="font-semibold text-orange-900 mb-3">🚌 교통 정보</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">출발지</label>
-                  <PlaceAutocomplete
-                    value={formData.departure || ''}
-                    onChange={(value) => setFormData({ ...formData, departure: value })}
-                    onPlaceSelect={(place) => {
-                      setFormData({
-                        ...formData,
-                        departure: place.name,
-                        departure_google_maps_url: place.google_maps_url,
-                      });
-                    }}
-                    placeholder="출발지 입력 (예: 부다페스트 공항)"
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
-                  />
-                  {formData.departure_google_maps_url && (
-                    <a
-                      href={formData.departure_google_maps_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
-                    >
-                      ✓ 출발지 확인
-                    </a>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">도착지</label>
-                  <PlaceAutocomplete
-                    value={formData.arrival || ''}
-                    onChange={(value) => setFormData({ ...formData, arrival: value })}
-                    onPlaceSelect={(place) => {
-                      setFormData({
-                        ...formData,
-                        arrival: place.name,
-                        arrival_google_maps_url: place.google_maps_url,
-                      });
-                    }}
-                    placeholder="도착지 입력 (예: 부다페스트 숙소)"
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
-                  />
-                  {formData.arrival_google_maps_url && (
-                    <a
-                      href={formData.arrival_google_maps_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
-                    >
-                      ✓ 도착지 확인
-                    </a>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">출발 시간</label>
-                  <input
-                    type="time"
-                    value={formData.departure_time || ''}
-                    onChange={(e) => setFormData({ ...formData, departure_time: e.target.value })}
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">도착 시간</label>
-                  <input
-                    type="time"
-                    value={formData.arrival_time || ''}
-                    onChange={(e) => setFormData({ ...formData, arrival_time: e.target.value })}
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">교통수단</label>
-                  <input
-                    type="text"
-                    value={formData.transport_method || ''}
-                    onChange={(e) => setFormData({ ...formData, transport_method: e.target.value })}
-                    placeholder="택시, 기차, 버스 등"
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-orange-800 mb-2">소요 시간 (선택사항)</label>
-                  <input
-                    type="text"
-                    value={formData.travel_duration || ''}
-                    onChange={(e) => setFormData({ ...formData, travel_duration: e.target.value })}
-                    placeholder="3시간"
-                    className="w-full p-3 border-2 border-orange-300 rounded-lg"
-                  />
+
+              {/* 출발 정보 */}
+              <div className="bg-white p-4 rounded-lg border border-orange-200">
+                <h5 className="text-sm font-semibold text-orange-800 mb-3">🛫 출발</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">출발 날짜 *</label>
+                    <input
+                      type="date"
+                      value={formData.departure_date || ''}
+                      onChange={(e) => setFormData({ ...formData, departure_date: e.target.value })}
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">출발 시간</label>
+                    <input
+                      type="time"
+                      value={formData.departure_time || '09:00'}
+                      onChange={(e) => setFormData({ ...formData, departure_time: e.target.value })}
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">출발 도시 *</label>
+                    <input
+                      type="text"
+                      value={formData.departure_city || ''}
+                      onChange={(e) => setFormData({ ...formData, departure_city: e.target.value })}
+                      placeholder="예: 부다페스트"
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">출발지 상세</label>
+                    <PlaceAutocomplete
+                      value={formData.departure || ''}
+                      onChange={(value) => setFormData({ ...formData, departure: value })}
+                      onPlaceSelect={(place) => {
+                        setFormData({
+                          ...formData,
+                          departure: place.name,
+                          departure_google_maps_url: place.google_maps_url,
+                        });
+                      }}
+                      placeholder="출발지 입력 (예: 부다페스트 공항)"
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    />
+                    {formData.departure_google_maps_url && (
+                      <a
+                        href={formData.departure_google_maps_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
+                      >
+                        ✓ 출발지 확인
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
+
+              {/* 도착 정보 */}
+              <div className="bg-white p-4 rounded-lg border border-orange-200">
+                <h5 className="text-sm font-semibold text-orange-800 mb-3">🛬 도착</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">도착 날짜 *</label>
+                    <input
+                      type="date"
+                      value={formData.arrival_date || ''}
+                      onChange={(e) => setFormData({ ...formData, arrival_date: e.target.value })}
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">도착 시간</label>
+                    <input
+                      type="time"
+                      value={formData.arrival_time || '12:00'}
+                      onChange={(e) => setFormData({ ...formData, arrival_time: e.target.value })}
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">도착 도시 *</label>
+                    <input
+                      type="text"
+                      value={formData.arrival_city || ''}
+                      onChange={(e) => setFormData({ ...formData, arrival_city: e.target.value })}
+                      placeholder="예: 빈"
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">도착지 상세</label>
+                    <PlaceAutocomplete
+                      value={formData.arrival || ''}
+                      onChange={(value) => setFormData({ ...formData, arrival: value })}
+                      onPlaceSelect={(place) => {
+                        setFormData({
+                          ...formData,
+                          arrival: place.name,
+                          arrival_google_maps_url: place.google_maps_url,
+                        });
+                      }}
+                      placeholder="도착지 입력 (예: 빈 숙소)"
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                    />
+                    {formData.arrival_google_maps_url && (
+                      <a
+                        href={formData.arrival_google_maps_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-orange-600 hover:text-orange-800 underline mt-1 inline-block"
+                      >
+                        ✓ 도착지 확인
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* 교통수단 정보 */}
+              <div className="bg-white p-4 rounded-lg border border-orange-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">교통수단</label>
+                    <input
+                      type="text"
+                      value={formData.transport_method || ''}
+                      onChange={(e) => setFormData({ ...formData, transport_method: e.target.value })}
+                      placeholder="택시, 기차, 버스 등"
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">소요 시간 (선택사항)</label>
+                    <input
+                      type="text"
+                      value={formData.travel_duration || ''}
+                      onChange={(e) => setFormData({ ...formData, travel_duration: e.target.value })}
+                      placeholder="3시간"
+                      className="w-full p-2 border-2 border-orange-300 rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 자동 계산된 이동 시간 표시 */}
+              {formData.departure_date && formData.arrival_date && formData.departure_time && formData.arrival_time && (
+                <div className="bg-orange-100 p-3 rounded-lg border border-orange-300">
+                  <p className="text-sm text-orange-900">
+                    ℹ️ 이동 시간: <strong>
+                      {(() => {
+                        const depDateTime = new Date(`${formData.departure_date}T${formData.departure_time}`);
+                        const arrDateTime = new Date(`${formData.arrival_date}T${formData.arrival_time}`);
+                        const diffMs = arrDateTime.getTime() - depDateTime.getTime();
+                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                        const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                        return `${diffHours}시간 ${diffMins}분`;
+                      })()}
+                    </strong> (자동 계산)
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
